@@ -44,7 +44,7 @@ pipeline
         
         stage('Release')
         {
-            when { branch "PR-1" }
+            when { branch "LIBS-223" }
         
             steps
             {
