@@ -1,0 +1,2 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+com.avides.springboot.testcontainer.common.cleanup.EmbeddedContainerCleanupAutoConfiguration
