@@ -3,6 +3,8 @@
   <groupId>com.avides.springboot.testcontainer</groupId>
   <artifactId>springboot-testcontainer-common</artifactId>
   <name>springboot-testcontainer-common</name>
+  <description>Common utils for springboot-container</description>
+  <url>https://github.com/springboot-testcontainer/springboot-testcontainer-common</url>
   <version>0.1.0-RC1</version>
 
   <properties>
