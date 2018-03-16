@@ -3,7 +3,7 @@
   <groupId>com.avides.springboot.testcontainer</groupId>
   <artifactId>springboot-testcontainer-common</artifactId>
   <name>springboot-testcontainer-common</name>
-  <version>0.1.0-SNAPSHOT</version>
+  <version>0.1.0-RC1</version>
 
   <properties>
     <!-- System -->
