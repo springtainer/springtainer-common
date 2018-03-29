@@ -62,11 +62,10 @@ public class EmbeddedContainerCleanupAutoConfiguration
 
                         if (started.isBefore(staleSince))
                         {
-                            log.info("Removing stale container ({})", container.getId());
                             dockerClient.stopContainerCmd(container.getId()).exec();
                             dockerClient.removeContainerCmd(container.getId()).exec();
-                            log.info("Stale container removed ({})", container.getId());
                             removed++;
+                            log.info("Stale container removed ({})", container.labels);
                         }
                     }
                 }

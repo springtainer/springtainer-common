@@ -10,4 +10,6 @@ public class Labels
     public static final String TESTCONTAINER_IMAGE = "TESTCONTAINER_IMAGE";
 
     public static final String TESTCONTAINER_STARTED = "TESTCONTAINER_STARTED";
+
+    public static final String TESTCONTAINER_ISSUER = "TESTCONTAINER_ISSUER";
 }

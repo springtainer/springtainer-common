@@ -16,6 +16,7 @@ import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MapPropertySource;
 
 import com.avides.springboot.testcontainer.common.Labels;
+import com.avides.springboot.testcontainer.common.util.IssuerUtil;
 import com.github.dockerjava.api.DockerClient;
 import com.github.dockerjava.api.exception.NotFoundException;
 import com.github.dockerjava.core.DockerClientBuilder;
@@ -83,6 +84,7 @@ public abstract class AbstractBuildingEmbeddedContainer<P extends AbstractEmbedd
         labels.put(Labels.TESTCONTAINER_SERVICE, service);
         labels.put(Labels.TESTCONTAINER_IMAGE, properties.getDockerImage());
         labels.put(Labels.TESTCONTAINER_STARTED, String.valueOf(System.currentTimeMillis()));
+        labels.put(Labels.TESTCONTAINER_ISSUER, IssuerUtil.getIssuer());
         return labels;
     }
 
