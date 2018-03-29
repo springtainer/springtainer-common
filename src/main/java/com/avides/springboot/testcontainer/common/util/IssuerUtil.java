@@ -26,7 +26,7 @@ public class IssuerUtil
 
         if (StringUtils.isNotBlank(javaCommand))
         {
-            Matcher matcher = TARGET_PATTERN.matcher(javaCommand);
+            Matcher matcher = TARGET_PATTERN.matcher(javaCommand.split(":")[0]);
 
             if (matcher.find())
             {
@@ -38,7 +38,7 @@ public class IssuerUtil
 
         if (StringUtils.isNotBlank(javaClassPath))
         {
-            Matcher matcher = TARGET_PATTERN.matcher(javaClassPath);
+            Matcher matcher = TARGET_PATTERN.matcher(javaClassPath.split(":")[0]);
 
             if (matcher.find())
             {
