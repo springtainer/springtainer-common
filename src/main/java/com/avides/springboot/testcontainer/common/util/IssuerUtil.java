@@ -14,13 +14,21 @@ public class IssuerUtil
 
     public String getIssuer()
     {
+        // https://wiki.jenkins.io/display/JENKINS/Building+a+software+project#Buildingasoftwareproject-belowJenkinsSetEnvironmentVariables
+        String jobName = EnvProvider.getEnv("JOB_NAME");
+
+        if (StringUtils.isNotBlank(jobName))
+        {
+            return jobName;
+        }
+
         String javaCommand = System.getProperty("sun.java.command");
 
-        if (StringUtils.isNotBlank(javaCommand) && javaCommand.contains("/target/"))
+        if (StringUtils.isNotBlank(javaCommand))
         {
             Matcher matcher = TARGET_PATTERN.matcher(javaCommand);
 
-            if (matcher.find() && matcher.groupCount() > 3)
+            if (matcher.find())
             {
                 return matcher.group(3);
             }
@@ -28,16 +36,25 @@ public class IssuerUtil
 
         String javaClassPath = System.getProperty("java.class.path");
 
-        if (StringUtils.isNotBlank(javaClassPath) && javaClassPath.contains("/target/"))
+        if (StringUtils.isNotBlank(javaClassPath))
         {
             Matcher matcher = TARGET_PATTERN.matcher(javaClassPath);
 
-            if (matcher.find() && matcher.groupCount() > 3)
+            if (matcher.find())
             {
                 return matcher.group(3);
             }
         }
 
         return "unknown";
+    }
+
+    @UtilityClass
+    public static class EnvProvider
+    {
+        public static String getEnv(String key)
+        {
+            return System.getenv(key);
+        }
     }
 }
