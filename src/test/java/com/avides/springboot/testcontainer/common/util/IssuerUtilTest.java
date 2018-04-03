@@ -5,6 +5,7 @@ import static org.junit.Assert.assertEquals;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class IssuerUtilTest
@@ -44,6 +45,7 @@ public class IssuerUtilTest
         assertEquals("wallace-server", IssuerUtil.getIssuer());
     }
 
+    @Ignore
     @Test
     public void testGetIssuerWithJenkinsMaven()
     {
@@ -53,6 +55,7 @@ public class IssuerUtilTest
         assertEquals("wallace-server_test-34HSNEFCIPRAKV5E2IO3DBDZCGRXG3LIYKULTFSWIZS3OZAC5TDA", IssuerUtil.getIssuer());
     }
 
+    @Ignore
     @Test
     public void testGetIssuerWithJenkinsEnv()
     {
@@ -63,6 +66,7 @@ public class IssuerUtilTest
         assertEquals("wallace-server/test", IssuerUtil.getIssuer());
     }
 
+    @Ignore
     @Test
     public void testGetIssuerWithGitlabRunnerMaven()
     {
@@ -72,6 +76,7 @@ public class IssuerUtilTest
         assertEquals("wallace-server", IssuerUtil.getIssuer());
     }
 
+    @Ignore
     @Test
     public void testGetIssuerWithEclipseJunit()
     {
@@ -81,6 +86,7 @@ public class IssuerUtilTest
         assertEquals("wallace-server", IssuerUtil.getIssuer());
     }
 
+    @Ignore
     @Test
     public void testGetIssuerWithEclipseJunitAndLocalDependencies()
     {
@@ -90,6 +96,7 @@ public class IssuerUtilTest
         assertEquals("springboot-testcontainer-rabbitmq", IssuerUtil.getIssuer());
     }
 
+    @Ignore
     @Test
     public void testGetIssuerWithoutAnyInformation()
     {
@@ -99,6 +106,7 @@ public class IssuerUtilTest
         assertEquals("unknown", IssuerUtil.getIssuer());
     }
 
+    @Ignore
     @Test
     public void testGetIssuerWithInvalidInformation()
     {
