@@ -3,31 +3,32 @@ package com.avides.springboot.testcontainer.common.util;
 import static org.junit.Assert.assertEquals;
 
 import org.junit.After;
-import org.junit.Before;
+import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 public class IssuerUtilTest
 {
-    private String javaCommand;
+    private static String javaCommand;
 
-    private String javaClassPath;
+    private static String javaClassPath;
 
     @BeforeClass
     public static void beforeClass()
     {
         System.setProperty("JENKINS_JOB_NAME", "");
-    }
-
-    @Before
-    public void before()
-    {
         javaCommand = System.getProperty("sun.java.command");
         javaClassPath = System.getProperty("java.class.path");
     }
 
     @After
     public void after()
+    {
+        System.setProperty("JENKINS_JOB_NAME", "");
+    }
+
+    @AfterClass
+    public static void afterClass()
     {
         System.setProperty("JENKINS_JOB_NAME", "");
         System.setProperty("sun.java.command", javaCommand);
