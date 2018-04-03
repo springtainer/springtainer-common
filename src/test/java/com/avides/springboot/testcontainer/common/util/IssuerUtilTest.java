@@ -1,23 +1,15 @@
 package com.avides.springboot.testcontainer.common.util;
 
 import static org.junit.Assert.assertEquals;
-import static org.powermock.api.easymock.PowerMock.expectLastCall;
-import static org.powermock.api.easymock.PowerMock.mockStatic;
-import static org.powermock.api.easymock.PowerMock.replayAll;
-import static org.powermock.api.easymock.PowerMock.verifyAll;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
 
-import com.avides.springboot.testcontainer.common.util.IssuerUtil.EnvProvider;
-
-@RunWith(PowerMockRunner.class)
 public class IssuerUtilTest
 {
+    private String jenkinsJobName;
+
     private String javaCommand;
 
     private String javaClassPath;
@@ -25,6 +17,7 @@ public class IssuerUtilTest
     @Before
     public void before()
     {
+        jenkinsJobName = System.getProperty("JENKINS_JOB_NAME");
         javaCommand = System.getProperty("sun.java.command");
         javaClassPath = System.getProperty("java.class.path");
     }
@@ -32,6 +25,7 @@ public class IssuerUtilTest
     @After
     public void after()
     {
+        System.setProperty("JENKINS_JOB_NAME", jenkinsJobName != null ? jenkinsJobName : "");
         System.setProperty("sun.java.command", javaCommand);
         System.setProperty("java.class.path", javaClassPath);
     }
@@ -61,19 +55,11 @@ public class IssuerUtilTest
     }
 
     @Test
-    @PrepareForTest(EnvProvider.class)
     public void testGetIssuerWithJenkinsEnv()
     {
-        mockStatic(EnvProvider.class);
+        System.setProperty("JENKINS_JOB_NAME", "wallace-server/test");
 
-        EnvProvider.getEnv("JOB_NAME");
-        expectLastCall().andReturn("wallace-server/test");
-
-        replayAll();
-        String issuer = IssuerUtil.getIssuer();
-        verifyAll();
-
-        assertEquals("wallace-server/test", issuer);
+        assertEquals("wallace-server/test", IssuerUtil.getIssuer());
     }
 
     @Test
