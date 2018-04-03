@@ -25,10 +25,6 @@ public class IssuerUtil
 
     public String getIssuer()
     {
-        System.out.println(System.getProperty("JENKINS_JOB_NAME"));
-        System.out.println(System.getProperty("sun.java.command"));
-        System.out.println(System.getProperty("java.class.path"));
-
         // https://wiki.jenkins.io/display/JENKINS/Building+a+software+project#Buildingasoftwareproject-belowJenkinsSetEnvironmentVariables
         String jobName = System.getProperty("JENKINS_JOB_NAME");
 
