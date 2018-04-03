@@ -2,9 +2,10 @@ pipeline
 {
 	agent
 	{
-	docker
-	{
-		image 'maven:3.5-jdk-8'
+		docker
+		{
+			image 'maven:3.5-jdk-8'
+		}
 	}
 
     triggers
