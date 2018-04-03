@@ -2,7 +2,7 @@ springboot-testcontainers-common
 ================================
 
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.avides.springboot.testcontainer/springboot-testcontainer-common/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.avides.springboot.testcontainer/springboot-testcontainer-common)
-[![Codacy Badge](https://api.codacy.com/project/badge/Grade/xxx)](https://www.codacy.com/app/springboot-testcontainer/springboot-testcontainer-common)
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/f23e7fe358f44755b4b006178eb3dc8c)](https://www.codacy.com/app/avides-builds/springboot-testcontainer-common)
 [![Coverage Status](https://coveralls.io/repos/springboot-testcontainer/springboot-testcontainer-common/badge.svg)](https://coveralls.io/r/springboot-testcontainer/springboot-testcontainer-common)
 [![Build Status](https://travis-ci.org/springboot-testcontainer/springboot-testcontainer-common.svg?branch=master)](https://travis-ci.org/springboot-testcontainer/springboot-testcontainer-common)
 
