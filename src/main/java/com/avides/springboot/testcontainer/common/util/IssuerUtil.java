@@ -12,10 +12,21 @@ public class IssuerUtil
 {
     private static final Pattern TARGET_PATTERN = Pattern.compile("(.*)(/|\\\\)(.*)(/|\\\\)target(/|\\\\)(.*)");
 
+    static
+    {
+        // Transform env to property to simplify testing
+        String jobName = System.getenv("JOB_NAME");
+
+        if (StringUtils.isNotBlank(jobName))
+        {
+            System.setProperty("JENKINS_JOB_NAME", jobName);
+        }
+    }
+
     public String getIssuer()
     {
         // https://wiki.jenkins.io/display/JENKINS/Building+a+software+project#Buildingasoftwareproject-belowJenkinsSetEnvironmentVariables
-        String jobName = EnvProvider.getEnv("JOB_NAME");
+        String jobName = System.getProperty("JENKINS_JOB_NAME");
 
         if (StringUtils.isNotBlank(jobName))
         {
@@ -47,14 +58,5 @@ public class IssuerUtil
         }
 
         return "unknown";
-    }
-
-    @UtilityClass
-    public static class EnvProvider
-    {
-        public static String getEnv(String key)
-        {
-            return System.getenv(key);
-        }
     }
 }

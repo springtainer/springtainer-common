@@ -1,30 +1,25 @@
 package com.avides.springboot.testcontainer.common.util;
 
 import static org.junit.Assert.assertEquals;
-import static org.powermock.api.easymock.PowerMock.expectLastCall;
-import static org.powermock.api.easymock.PowerMock.mockStatic;
-import static org.powermock.api.easymock.PowerMock.replayAll;
-import static org.powermock.api.easymock.PowerMock.verifyAll;
 
 import org.junit.After;
-import org.junit.Before;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
 
-import com.avides.springboot.testcontainer.common.util.IssuerUtil.EnvProvider;
-
-@RunWith(PowerMockRunner.class)
 public class IssuerUtilTest
 {
-    private String javaCommand;
+    private static String javaCommand;
 
-    private String javaClassPath;
+    private static String javaClassPath;
 
-    @Before
-    public void before()
+    @BeforeClass
+    public static void beforeClass()
     {
+        // Do not remove this line!
+        System.out.println("Current issuer: " + IssuerUtil.getIssuer());
+
+        System.setProperty("JENKINS_JOB_NAME", "");
         javaCommand = System.getProperty("sun.java.command");
         javaClassPath = System.getProperty("java.class.path");
     }
@@ -32,14 +27,15 @@ public class IssuerUtilTest
     @After
     public void after()
     {
-        System.setProperty("sun.java.command", javaCommand);
-        System.setProperty("java.class.path", javaClassPath);
+        System.setProperty("JENKINS_JOB_NAME", "");
     }
 
-    @Test
-    public void testGetIssuerWithThis()
+    @AfterClass
+    public static void afterClass()
     {
-        assertEquals("springboot-testcontainer-common", IssuerUtil.getIssuer());
+        System.setProperty("JENKINS_JOB_NAME", "");
+        System.setProperty("sun.java.command", javaCommand);
+        System.setProperty("java.class.path", javaClassPath);
     }
 
     @Test
@@ -61,19 +57,13 @@ public class IssuerUtilTest
     }
 
     @Test
-    @PrepareForTest(EnvProvider.class)
     public void testGetIssuerWithJenkinsEnv()
     {
-        mockStatic(EnvProvider.class);
+        System.setProperty("JENKINS_JOB_NAME", "wallace-server/test");
+        System.setProperty("sun.java.command", "org.eclipse.jdt.internal.junit.runner.RemoteTestRunner -version 3 -port 35954 -testLoaderClass org.eclipse.jdt.internal.junit4.runner.JUnit4TestLoader -loaderpluginname org.eclipse.jdt.junit4.runtime -testNameFile /tmp/testNames7407047875518582294.txt");
+        System.setProperty("java.class.path", "/home/avidesit/git/springboot-testcontainer-rabbitmq/target/test-classes:/home/avidesit/git/springboot-testcontainer-rabbitmq/target/classes:/home/avidesit/.m2/repository/org/projectlombok/lombok/1.16.20/lombok-1.16.20.jar:/home/avidesit/git/springboot-testcontainer-common/target/classes:/home/avidesit/.m2/repository/com/github/docker-java/docker-java/3.0.14/docker-java-3.0.14.jar:/home/avidesit/.m2/repository/org/apache/httpcomponents/httpcore/4.4.5/httpcore-4.4.5.jar:/home/avidesit/.m2/repository/org/apache/httpcomponents/httpclient/4.5/httpclient-4.5.jar:/home/avidesit/.m2/repository/com/kohlschutter/junixsocket/junixsocket-common/2.0.4/junixsocket-common-2.0.4.jar:/home/avidesit/.m2/repository/log4j/log4j/1.2.17/log4j-1.2.17.jar:/home/avidesit/.m2/repository/com/kohlschutter/junixsocket/junixsocket-native-common/2.0.4/junixsocket-native-common-2.0.4.jar:/home/avidesit/.m2/repository/org/scijava/native-lib-loader/2.0.2/native-lib-loader-2.0.2.jar:/home/avidesit/.m2/repository/org/apache/commons/commons-compress/1.12/commons-compress-1.12.jar:/home/avidesit/.m2/repository/commons-codec/commons-codec/1.10/commons-codec-1.10.jar:/home/avidesit/.m2/repository/commons-lang/commons-lang/2.6/commons-lang-2.6.jar:/home/avidesit/.m2/repository/commons-io/commons-io/2.5/commons-io-2.5.jar:/home/avidesit/.m2/repository/org/slf4j/jcl-over-slf4j/1.7.21/jcl-over-slf4j-1.7.21.jar:/home/avidesit/.m2/repository/com/google/guava/guava/19.0/guava-19.0.jar:/home/avidesit/.m2/repository/org/bouncycastle/bcpkix-jdk15on/1.54/bcpkix-jdk15on-1.54.jar:/home/avidesit/.m2/repository/org/bouncycastle/bcprov-jdk15on/1.54/bcprov-jdk15on-1.54.jar:/home/avidesit/.m2/repository/io/netty/netty-codec-http/4.1.11.Final/netty-codec-http-4.1.11.Final.jar:/home/avidesit/.m2/repository/io/netty/netty-codec/4.1.11.Final/netty-codec-4.1.11.Final.jar:/home/avidesit/.m2/repository/io/netty/netty-handler/4.1.11.Final/netty-handler-4.1.11.Final.jar:/home/avidesit/.m2/repository/io/netty/netty-buffer/4.1.11.Final/netty-buffer-4.1.11.Final.jar:/home/avidesit/.m2/repository/io/netty/netty-transport/4.1.11.Final/netty-transport-4.1.11.Final.jar:/home/avidesit/.m2/repository/io/netty/netty-resolver/4.1.11.Final/netty-resolver-4.1.11.Final.jar:/home/avidesit/.m2/repository/io/netty/netty-handler-proxy/4.1.11.Final/netty-handler-proxy-4.1.11.Final.jar:/home/avidesit/.m2/repository/io/netty/netty-codec-socks/4.1.11.Final/netty-codec-socks-4.1.11.Final.jar:/home/avidesit/.m2/repository/io/netty/netty-transport-native-epoll/4.1.11.Final/netty-transport-native-epoll-4.1.11.Final-linux-x86_64.jar:/home/avidesit/.m2/repository/io/netty/netty-common/4.1.11.Final/netty-common-4.1.11.Final.jar:/home/avidesit/.m2/repository/io/netty/netty-transport-native-unix-common/4.1.11.Final/netty-transport-native-unix-common-4.1.11.Final.jar:/home/avidesit/.m2/repository/io/netty/netty-transport-native-kqueue/4.1.11.Final/netty-transport-native-kqueue-4.1.11.Final-osx-x86_64.jar:/home/avidesit/.m2/repository/com/fasterxml/jackson/jaxrs/jackson-jaxrs-json-provider/2.9.4/jackson-jaxrs-json-provider-2.9.4.jar:/home/avidesit/.m2/repository/com/fasterxml/jackson/jaxrs/jackson-jaxrs-base/2.9.4/jackson-jaxrs-base-2.9.4.jar:/home/avidesit/.m2/repository/com/fasterxml/jackson/core/jackson-core/2.9.4/jackson-core-2.9.4.jar:/home/avidesit/.m2/repository/com/fasterxml/jackson/module/jackson-module-jaxb-annotations/2.9.4/jackson-module-jaxb-annotations-2.9.4.jar:/home/avidesit/.m2/repository/com/fasterxml/jackson/core/jackson-annotations/2.9.0/jackson-annotations-2.9.0.jar:/home/avidesit/.m2/repository/org/glassfish/jersey/connectors/jersey-apache-connector/2.26/jersey-apache-connector-2.26.jar:/home/avidesit/.m2/repository/org/glassfish/jersey/core/jersey-common/2.26/jersey-common-2.26.jar:/home/avidesit/.m2/repository/javax/annotation/javax.annotation-api/1.2/javax.annotation-api-1.2.jar:/home/avidesit/.m2/repository/org/glassfish/hk2/osgi-resource-locator/1.0.1/osgi-resource-locator-1.0.1.jar:/home/avidesit/.m2/repository/javax/ws/rs/javax.ws.rs-api/2.1/javax.ws.rs-api-2.1.jar:/home/avidesit/.m2/repository/org/glassfish/jersey/core/jersey-client/2.26/jersey-client-2.26.jar:/home/avidesit/.m2/repository/org/glassfish/hk2/external/javax.inject/2.5.0-b42/javax.inject-2.5.0-b42.jar:/home/avidesit/.m2/repository/org/glassfish/jersey/inject/jersey-hk2/2.26/jersey-hk2-2.26.jar:/home/avidesit/.m2/repository/org/glassfish/hk2/hk2-locator/2.5.0-b42/hk2-locator-2.5.0-b42.jar:/home/avidesit/.m2/repository/org/glassfish/hk2/external/aopalliance-repackaged/2.5.0-b42/aopalliance-repackaged-2.5.0-b42.jar:/home/avidesit/.m2/repository/org/glassfish/hk2/hk2-api/2.5.0-b42/hk2-api-2.5.0-b42.jar:/home/avidesit/.m2/repository/javax/inject/javax.inject/1/javax.inject-1.jar:/home/avidesit/.m2/repository/org/glassfish/hk2/hk2-utils/2.5.0-b42/hk2-utils-2.5.0-b42.jar:/home/avidesit/.m2/repository/org/javassist/javassist/3.22.0-CR2/javassist-3.22.0-CR2.jar:/home/avidesit/.m2/repository/org/springframework/boot/spring-boot-autoconfigure/2.0.0.RELEASE/spring-boot-autoconfigure-2.0.0.RELEASE.jar:/home/avidesit/.m2/repository/org/springframework/cloud/spring-cloud-context/2.0.0.M7/spring-cloud-context-2.0.0.M7.jar:/home/avidesit/.m2/repository/org/springframework/security/spring-security-crypto/5.0.2.RELEASE/spring-security-crypto-5.0.2.RELEASE.jar:/home/avidesit/.m2/repository/org/rnorth/duct-tape/duct-tape/1.0.4/duct-tape-1.0.4.jar:/home/avidesit/.m2/repository/org/jetbrains/annotations/13.0/annotations-13.0.jar:/home/avidesit/.m2/repository/org/springframework/boot/spring-boot-configuration-processor/2.0.0.RELEASE/spring-boot-configuration-processor-2.0.0.RELEASE.jar:/home/avidesit/.m2/repository/org/springframework/amqp/spring-rabbit/2.0.2.RELEASE/spring-rabbit-2.0.2.RELEASE.jar:/home/avidesit/.m2/repository/org/springframework/amqp/spring-amqp/2.0.2.RELEASE/spring-amqp-2.0.2.RELEASE.jar:/home/avidesit/.m2/repository/com/rabbitmq/amqp-client/5.1.2/amqp-client-5.1.2.jar:/home/avidesit/.m2/repository/com/rabbitmq/http-client/1.3.1.RELEASE/http-client-1.3.1.RELEASE.jar:/home/avidesit/.m2/repository/com/fasterxml/jackson/core/jackson-databind/2.9.2/jackson-databind-2.9.2.jar:/home/avidesit/.m2/repository/org/springframework/spring-context/5.0.3.RELEASE/spring-context-5.0.3.RELEASE.jar:/home/avidesit/.m2/repository/org/springframework/spring-aop/5.0.3.RELEASE/spring-aop-5.0.3.RELEASE.jar:/home/avidesit/.m2/repository/org/springframework/spring-beans/5.0.3.RELEASE/spring-beans-5.0.3.RELEASE.jar:/home/avidesit/.m2/repository/org/springframework/spring-expression/5.0.3.RELEASE/spring-expression-5.0.3.RELEASE.jar:/home/avidesit/.m2/repository/org/springframework/spring-messaging/5.0.3.RELEASE/spring-messaging-5.0.3.RELEASE.jar:/home/avidesit/.m2/repository/org/springframework/spring-tx/5.0.3.RELEASE/spring-tx-5.0.3.RELEASE.jar:/home/avidesit/.m2/repository/org/springframework/spring-web/5.0.3.RELEASE/spring-web-5.0.3.RELEASE.jar:/home/avidesit/.m2/repository/org/springframework/retry/spring-retry/1.2.1.RELEASE/spring-retry-1.2.1.RELEASE.jar:/home/avidesit/.m2/repository/org/assertj/assertj-core/3.9.1/assertj-core-3.9.1.jar:/home/avidesit/.m2/repository/org/easymock/easymock/3.5.1/easymock-3.5.1.jar:/home/avidesit/.m2/repository/org/objenesis/objenesis/2.6/objenesis-2.6.jar:/home/avidesit/.m2/repository/org/powermock/powermock-module-junit4/1.7.3/powermock-module-junit4-1.7.3.jar:/home/avidesit/.m2/repository/org/powermock/powermock-module-junit4-common/1.7.3/powermock-module-junit4-common-1.7.3.jar:/home/avidesit/.m2/repository/org/powermock/powermock-reflect/1.7.3/powermock-reflect-1.7.3.jar:/home/avidesit/.m2/repository/org/powermock/powermock-core/1.7.3/powermock-core-1.7.3.jar:/home/avidesit/.m2/repository/org/mockito/mockito-core/2.8.9/mockito-core-2.8.9.jar:/home/avidesit/.m2/repository/net/bytebuddy/byte-buddy/1.6.14/byte-buddy-1.6.14.jar:/home/avidesit/.m2/repository/net/bytebuddy/byte-buddy-agent/1.6.14/byte-buddy-agent-1.6.14.jar:/home/avidesit/.m2/repository/junit/junit/4.12/junit-4.12.jar:/home/avidesit/.m2/repository/org/hamcrest/hamcrest-core/1.3/hamcrest-core-1.3.jar:/home/avidesit/.m2/repository/org/powermock/powermock-api-easymock/1.7.3/powermock-api-easymock-1.7.3.jar:/home/avidesit/.m2/repository/org/powermock/powermock-api-support/1.7.3/powermock-api-support-1.7.3.jar:/home/avidesit/.m2/repository/cglib/cglib-nodep/2.2.2/cglib-nodep-2.2.2.jar:/home/avidesit/.m2/repository/org/jacoco/org.jacoco.agent/0.8.0/org.jacoco.agent-0.8.0-runtime.jar:/home/avidesit/.m2/repository/org/springframework/spring-test/5.0.4.RELEASE/spring-test-5.0.4.RELEASE.jar:/home/avidesit/.m2/repository/org/springframework/spring-core/5.0.4.RELEASE/spring-core-5.0.4.RELEASE.jar:/home/avidesit/.m2/repository/org/springframework/spring-jcl/5.0.4.RELEASE/spring-jcl-5.0.4.RELEASE.jar:/home/avidesit/.m2/repository/org/springframework/boot/spring-boot-test/2.0.0.RELEASE/spring-boot-test-2.0.0.RELEASE.jar:/home/avidesit/.m2/repository/org/springframework/boot/spring-boot/2.0.0.RELEASE/spring-boot-2.0.0.RELEASE.jar:/home/avidesit/.m2/repository/ch/qos/logback/logback-classic/1.2.3/logback-classic-1.2.3.jar:/home/avidesit/.m2/repository/ch/qos/logback/logback-core/1.2.3/logback-core-1.2.3.jar:/home/avidesit/.m2/repository/org/slf4j/slf4j-api/1.7.25/slf4j-api-1.7.25.jar:/home/avidesit/Tools/sts-3.9.0.RELEASE/sts-3.9.0.RELEASE/configuration/org.eclipse.osgi/1049/0/.cp:/home/avidesit/Tools/sts-3.9.0.RELEASE/sts-3.9.0.RELEASE/configuration/org.eclipse.osgi/1311/0/.cp");
 
-        EnvProvider.getEnv("JOB_NAME");
-        expectLastCall().andReturn("wallace-server/test");
-
-        replayAll();
-        String issuer = IssuerUtil.getIssuer();
-        verifyAll();
-
-        assertEquals("wallace-server/test", issuer);
+        assertEquals("wallace-server/test", IssuerUtil.getIssuer());
     }
 
     @Test
