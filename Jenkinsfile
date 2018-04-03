@@ -1,6 +1,11 @@
 pipeline 
 {
-    agent any
+	agent
+	{
+	docker
+	{
+		image 'maven:3.5-jdk-8'
+	}
 
     triggers
     {
