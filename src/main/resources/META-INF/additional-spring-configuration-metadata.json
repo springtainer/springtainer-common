@@ -2,7 +2,7 @@
 	"groups": [],
 	"properties": [
 		{
-			"name": "embedded.container.container-network",
+			"name": "embedded.container.common.network",
 			"description": "Network in which the container runs",
 			"type": "java.lang.String",
 			"defaultValue": "bridge"
@@ -16,6 +16,12 @@
 		{
 			"name": "embedded.container.cleanup.after-minutes",
 			"description": "Minutes after a container becomes stale",
+			"type": "java.lang.Integer",
+			"defaultValue": "10"
+		},
+		{
+			"name": "embedded.container.cleanup.max-concurrent-per-issuer",
+			"description": "Max allowed concurrent containers per issuer",
 			"type": "java.lang.Integer",
 			"defaultValue": "10"
 		}
