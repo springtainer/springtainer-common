@@ -6,15 +6,11 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
-@ConfigurationProperties("embedded.container")
+@ConfigurationProperties("embedded.container.common")
 @Getter
 @Setter
 @ToString
-public class CommonEmbeddedContainerProperties
+public class ContainerCommonProperties
 {
-    private String containerNetwork = "bridge";
-
-    private boolean cleanupEnabled = true;
-
-    private int cleanupAfterMinutes = 10;
+    private String network = "bridge";
 }

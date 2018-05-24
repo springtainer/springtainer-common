@@ -11,12 +11,13 @@ springboot-testcontainers-common
 <dependency>
 	<groupId>com.avides.springboot.testcontainer</groupId>
 	<artifactId>springboot-testcontainer-common</artifactId>
-	<version>0.1.0-RC2</version>
+	<version>0.1.0-RC3</version>
 </dependency>
 ```
 
 ### Configuration
 Properties consumed (in `bootstrap.properties`):
-- `embedded.container-network` (default is `bridge`)
-- `embedded.stale-containers-cleanup.enabled` (default is `true`)
-- `embedded.stale-containers-cleanup.after-minutes` (default is `10`)
+- `embedded.container.common.network` (default is `bridge`)
+- `embedded.container.cleanup.enabled` (default is `true`)
+- `embedded.container.cleanup.after-minutes` (default is `10`)
+- `embedded.container.cleanup.max-concurrent-per-issuer` (default is `10`)
