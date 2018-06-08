@@ -11,7 +11,7 @@ springboot-testcontainers-common
 <dependency>
 	<groupId>com.avides.springboot.testcontainer</groupId>
 	<artifactId>springboot-testcontainer-common</artifactId>
-	<version>0.1.0-RC3</version>
+	<version>0.1.0-RC4</version>
 </dependency>
 ```
 

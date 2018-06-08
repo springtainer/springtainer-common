@@ -18,6 +18,7 @@ import org.springframework.core.env.MapPropertySource;
 import com.avides.springboot.testcontainer.common.Labels;
 import com.avides.springboot.testcontainer.common.util.IssuerUtil;
 import com.github.dockerjava.api.DockerClient;
+import com.github.dockerjava.api.exception.InternalServerErrorException;
 import com.github.dockerjava.api.exception.NotFoundException;
 import com.github.dockerjava.core.DockerClientBuilder;
 import com.github.dockerjava.core.command.PullImageResultCallback;
@@ -97,7 +98,7 @@ public abstract class AbstractBuildingEmbeddedContainer<P extends AbstractEmbedd
 
     protected void createContainer(DockerClient dockerClient) throws InterruptedException
     {
-        dockerClient.pullImageCmd(properties.getDockerImage()).exec(new PullImageResultCallback()).awaitCompletion();
+        pullImage(dockerClient);
         String containerId = dockerClient.createContainerCmd(properties.getDockerImage()) // NOSONAR
                 .withLabels(getAllLabels())
                 .withPublishAllPorts(Boolean.TRUE)
@@ -106,6 +107,18 @@ public abstract class AbstractBuildingEmbeddedContainer<P extends AbstractEmbedd
                 .getId();
         dockerClient.startContainerCmd(containerId).exec();
         containerInfo = dockerClient.inspectContainerCmd(containerId).exec();
+    }
+
+    protected void pullImage(DockerClient dockerClient) throws InterruptedException
+    {
+        try
+        {
+            dockerClient.pullImageCmd(properties.getDockerImage()).exec(new PullImageResultCallback()).awaitCompletion();
+        }
+        catch (InternalServerErrorException e)
+        {
+            log.warn("Failed to pull image from registry. Try to proceed with local image..", e);
+        }
     }
 
     protected Map<String, Object> providedProperties()
