@@ -113,8 +113,17 @@ public abstract class AbstractBuildingEmbeddedContainer<P extends AbstractEmbedd
     {
         try
         {
-            dockerClient.pullImageCmd(properties.getDockerImage()).exec(new PullImageResultCallback()).awaitCompletion();
+            // Pulling from remote is always slower than pulling from local
+            try
+            {
+                dockerClient.inspectImageCmd(properties.getDockerImage()).exec();
+            }
+            catch (NotFoundException e)
+            {
+                dockerClient.pullImageCmd(properties.getDockerImage()).exec(new PullImageResultCallback()).awaitCompletion();
+            }
         }
+        // Ignore registry-problems and try to proceed with local image
         catch (InternalServerErrorException e)
         {
             log.warn("Failed to pull image from registry. Try to proceed with local image..", e);
