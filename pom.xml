@@ -5,7 +5,7 @@
   <name>springboot-testcontainer-common</name>
   <description>Common utils for springboot-container</description>
   <url>https://github.com/springboot-testcontainer/springboot-testcontainer-common</url>
-  <version>0.1.0-RC5</version>
+  <version>0.1.0-RC6</version>
 
   <properties>
     <!-- System -->
@@ -30,17 +30,10 @@
     <github-release-plugin.version>1.2.0</github-release-plugin.version>
     <nexus-staging-maven-plugin.version>1.6.8</nexus-staging-maven-plugin.version>
     <!-- Other -->
-    <spring.version>5.0.6.RELEASE</spring.version>
-    <spring-boot.version>2.0.2.RELEASE</spring-boot.version>
+    <spring.version>5.0.7.RELEASE</spring.version>
+    <spring-boot.version>2.0.3.RELEASE</spring-boot.version>
     <jersey.version>2.26</jersey.version>
   </properties>
-
-  <repositories>
-    <repository>
-      <id>spring-milestones</id>
-      <url>https://repo.spring.io/libs-milestone</url>
-    </repository>
-  </repositories>
 
   <dependencies>
     <!-- Docker client -->
@@ -100,7 +93,7 @@
     <dependency>
       <groupId>org.springframework.cloud</groupId>
       <artifactId>spring-cloud-context</artifactId>
-      <version>2.0.0.M7</version>
+      <version>2.0.0.RELEASE</version>
     </dependency>
 
     <!-- Common -->
