@@ -18,6 +18,7 @@ import org.springframework.core.env.MapPropertySource;
 import com.avides.springboot.testcontainer.common.Labels;
 import com.avides.springboot.testcontainer.common.util.IssuerUtil;
 import com.github.dockerjava.api.DockerClient;
+import com.github.dockerjava.api.command.CreateContainerCmd;
 import com.github.dockerjava.api.exception.InternalServerErrorException;
 import com.github.dockerjava.api.exception.NotFoundException;
 import com.github.dockerjava.core.DockerClientBuilder;
@@ -99,15 +100,22 @@ public abstract class AbstractBuildingEmbeddedContainer<P extends AbstractEmbedd
     protected void createContainer(DockerClient dockerClient) throws InterruptedException
     {
         pullImage(dockerClient);
-        String containerId = dockerClient.createContainerCmd(properties.getDockerImage()) // NOSONAR
+        CreateContainerCmd createContainerCmd = dockerClient.createContainerCmd(properties.getDockerImage()) // NOSONAR
                 .withLabels(getAllLabels())
                 .withPublishAllPorts(Boolean.TRUE)
-                .withEnv(getEnvs())
-                .exec()
-                .getId();
+                .withEnv(getEnvs());
+        adjustCreateCommand(createContainerCmd);
+        String containerId = createContainerCmd.exec().getId();
         dockerClient.startContainerCmd(containerId).exec();
         containerInfo = dockerClient.inspectContainerCmd(containerId).exec();
     }
+
+    /**
+     * Adjust prepared {@link CreateContainerCmd} before create
+     *
+     * @param createContainerCmd prepared command
+     */
+    protected abstract void adjustCreateCommand(CreateContainerCmd createContainerCmd);
 
     protected void pullImage(DockerClient dockerClient) throws InterruptedException
     {
@@ -160,7 +168,7 @@ public abstract class AbstractBuildingEmbeddedContainer<P extends AbstractEmbedd
             try (DockerClient dockerClient = DockerClientBuilder.getInstance().build())
             {
                 log.info("Stopping {}-container...", service);
-                killContainer(dockerClient);
+                // killContainer(dockerClient);
                 log.info("{}-container stopped", service);
             }
             catch (NotFoundException e)
