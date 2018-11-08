@@ -168,7 +168,7 @@ public abstract class AbstractBuildingEmbeddedContainer<P extends AbstractEmbedd
             try (DockerClient dockerClient = DockerClientBuilder.getInstance().build())
             {
                 log.info("Stopping {}-container...", service);
-                // killContainer(dockerClient);
+                killContainer(dockerClient);
                 log.info("{}-container stopped", service);
             }
             catch (NotFoundException e)
