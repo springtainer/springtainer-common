@@ -32,6 +32,11 @@ public class EmbeddedContainerCleanupAutoConfiguration
 {
     public EmbeddedContainerCleanupAutoConfiguration()
     {
+        /**
+         * Temporary hack
+         * <p>
+         * Will be fixed with next spring-cloud release
+         */
         System.setProperty("spring.main.allow-bean-definition-overriding", "true");
     }
 
