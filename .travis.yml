@@ -13,7 +13,7 @@ cache:
   directories:
   - $HOME/.m2
 
-install: mvn package -Dgpg.skip=true
+install: mvn verify -Dgpg.skip=true
   
 before_install:
   - wget -O ~/codacy-coverage-reporter-assembly.jar https://github.com/codacy/codacy-coverage-reporter/releases/download/4.0.5/codacy-coverage-reporter-4.0.5-assembly.jar
