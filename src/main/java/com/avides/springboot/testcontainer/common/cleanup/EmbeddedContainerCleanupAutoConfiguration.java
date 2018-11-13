@@ -30,6 +30,16 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class EmbeddedContainerCleanupAutoConfiguration
 {
+    public EmbeddedContainerCleanupAutoConfiguration()
+    {
+        /**
+         * Temporary hack
+         * <p>
+         * Will be fixed with next spring-cloud release
+         */
+        System.setProperty("spring.main.allow-bean-definition-overriding", "true");
+    }
+
     @ConditionalOnMissingBean(EmbeddedContainerCleanup.class)
     @Bean
     public EmbeddedContainerCleanup embeddedContainerCleanup(ContainerCleanupProperties properties)
