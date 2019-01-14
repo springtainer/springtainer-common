@@ -7,8 +7,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.avides.springboot.testcontainer.common.OSUtils;
-
 public class OSUtilsTest
 {
     private String osName;
@@ -37,5 +35,19 @@ public class OSUtilsTest
     {
         System.setProperty("os.name", "Ubuntu Linux 16.04 LTS");
         assertFalse(OSUtils.isMac());
+    }
+
+    @Test
+    public void testIsLinuxWithMac()
+    {
+        System.setProperty("os.name", "MAC OS 11.12");
+        assertFalse(OSUtils.isLinux());
+    }
+
+    @Test
+    public void testIsLinuxWithLinux()
+    {
+        System.setProperty("os.name", "Ubuntu Linux 16.04 LTS");
+        assertTrue(OSUtils.isLinux());
     }
 }

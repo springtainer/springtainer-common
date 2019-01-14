@@ -9,4 +9,9 @@ public class OSUtils
     {
         return System.getProperty("os.name").toLowerCase().contains("mac");
     }
+
+    public boolean isLinux()
+    {
+        return System.getProperty("os.name").toLowerCase().contains("linux");
+    }
 }

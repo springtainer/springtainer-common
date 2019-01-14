@@ -16,11 +16,13 @@ import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MapPropertySource;
 
 import com.avides.springboot.testcontainer.common.Labels;
+import com.avides.springboot.testcontainer.common.OSUtils;
 import com.avides.springboot.testcontainer.common.util.IssuerUtil;
 import com.github.dockerjava.api.DockerClient;
 import com.github.dockerjava.api.command.CreateContainerCmd;
 import com.github.dockerjava.api.exception.InternalServerErrorException;
 import com.github.dockerjava.api.exception.NotFoundException;
+import com.github.dockerjava.api.model.HostConfig;
 import com.github.dockerjava.core.DockerClientBuilder;
 import com.github.dockerjava.core.command.PullImageResultCallback;
 
@@ -80,6 +82,20 @@ public abstract class AbstractBuildingEmbeddedContainer<P extends AbstractEmbedd
         return new HashMap<>();
     }
 
+    /**
+     * Provides a list of directories which can be mapped to memory (tmpfs)
+     * <p>
+     * Normally all directories where a container stores data can be used
+     * <p>
+     * This feature works only linux!
+     *
+     * @return List of directories
+     */
+    protected List<String> getTmpDirectories()
+    {
+        return new ArrayList<>();
+    }
+
     private Map<String, String> getTestcontainerLabels()
     {
         Map<String, String> labels = new HashMap<>();
@@ -97,13 +113,35 @@ public abstract class AbstractBuildingEmbeddedContainer<P extends AbstractEmbedd
         return labels;
     }
 
+    protected HostConfig buildHostConfig()
+    {
+        if (getTmpDirectories().isEmpty())
+        {
+            return null;
+        }
+
+        if (!OSUtils.isLinux())
+        {
+            return null;
+        }
+
+        Map<String, String> directories = new HashMap<>();
+        getTmpDirectories().forEach(directory -> directories.put(directory, ""));
+        return new HostConfig().withTmpFs(directories);
+    }
+
     protected void createContainer(DockerClient dockerClient) throws InterruptedException
     {
         pullImage(dockerClient);
         CreateContainerCmd createContainerCmd = dockerClient.createContainerCmd(properties.getDockerImage()) // NOSONAR
                 .withLabels(getAllLabels())
-                .withPublishAllPorts(Boolean.TRUE)
                 .withEnv(getEnvs());
+
+        if (buildHostConfig() != null)
+        {
+            createContainerCmd.withHostConfig(buildHostConfig());
+        }
+
         adjustCreateCommand(createContainerCmd);
         String containerId = createContainerCmd.exec().getId();
         dockerClient.startContainerCmd(containerId).exec();
