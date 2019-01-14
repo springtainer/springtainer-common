@@ -83,11 +83,11 @@ public abstract class AbstractBuildingEmbeddedContainer<P extends AbstractEmbedd
     }
 
     /**
-     * Provides a list of directories which can be mapped to memory (tmpfs)
+     * Configures a list of directories which can be mapped to memory (tmpfs)
      * <p>
-     * Normally all directories where a container stores data can be used
+     * Normally all VOLUMEs can be used (Exclude huge volumes!)
      * <p>
-     * This feature works only linux!
+     * This feature works only on linux!
      *
      * @return List of directories
      */
@@ -113,21 +113,25 @@ public abstract class AbstractBuildingEmbeddedContainer<P extends AbstractEmbedd
         return labels;
     }
 
+    /**
+     * Builds {@link HostConfig}
+     * <p>
+     * There is normally no need to overwrite this method!
+     *
+     * @return configured {@link HostConfig}
+     */
     protected HostConfig buildHostConfig()
     {
-        if (getTmpDirectories().isEmpty())
+        HostConfig hostConfig = new HostConfig();
+
+        if (!getTmpDirectories().isEmpty() && OSUtils.isLinux())
         {
-            return null;
+            Map<String, String> tmpDirectories = new HashMap<>();
+            getTmpDirectories().forEach(directory -> tmpDirectories.put(directory, ""));
+            hostConfig.withTmpFs(tmpDirectories);
         }
 
-        if (!OSUtils.isLinux())
-        {
-            return null;
-        }
-
-        Map<String, String> directories = new HashMap<>();
-        getTmpDirectories().forEach(directory -> directories.put(directory, ""));
-        return new HostConfig().withTmpFs(directories);
+        return hostConfig;
     }
 
     protected void createContainer(DockerClient dockerClient) throws InterruptedException
@@ -135,12 +139,8 @@ public abstract class AbstractBuildingEmbeddedContainer<P extends AbstractEmbedd
         pullImage(dockerClient);
         CreateContainerCmd createContainerCmd = dockerClient.createContainerCmd(properties.getDockerImage()) // NOSONAR
                 .withLabels(getAllLabels())
-                .withEnv(getEnvs());
-
-        if (buildHostConfig() != null)
-        {
-            createContainerCmd.withHostConfig(buildHostConfig());
-        }
+                .withEnv(getEnvs())
+                .withHostConfig(buildHostConfig());
 
         adjustCreateCommand(createContainerCmd);
         String containerId = createContainerCmd.exec().getId();
