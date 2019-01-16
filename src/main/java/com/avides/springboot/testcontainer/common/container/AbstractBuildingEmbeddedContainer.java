@@ -16,11 +16,13 @@ import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MapPropertySource;
 
 import com.avides.springboot.testcontainer.common.Labels;
+import com.avides.springboot.testcontainer.common.OSUtils;
 import com.avides.springboot.testcontainer.common.util.IssuerUtil;
 import com.github.dockerjava.api.DockerClient;
 import com.github.dockerjava.api.command.CreateContainerCmd;
 import com.github.dockerjava.api.exception.InternalServerErrorException;
 import com.github.dockerjava.api.exception.NotFoundException;
+import com.github.dockerjava.api.model.HostConfig;
 import com.github.dockerjava.core.DockerClientBuilder;
 import com.github.dockerjava.core.command.PullImageResultCallback;
 
@@ -80,6 +82,20 @@ public abstract class AbstractBuildingEmbeddedContainer<P extends AbstractEmbedd
         return new HashMap<>();
     }
 
+    /**
+     * Configures a list of directories which can be mapped to memory (tmpfs)
+     * <p>
+     * Normally all VOLUMEs can be used (Exclude huge volumes!)
+     * <p>
+     * This feature works only on linux!
+     *
+     * @return List of directories
+     */
+    protected List<String> getTmpDirectories()
+    {
+        return new ArrayList<>();
+    }
+
     private Map<String, String> getTestcontainerLabels()
     {
         Map<String, String> labels = new HashMap<>();
@@ -97,13 +113,35 @@ public abstract class AbstractBuildingEmbeddedContainer<P extends AbstractEmbedd
         return labels;
     }
 
+    /**
+     * Builds {@link HostConfig}
+     * <p>
+     * There is normally no need to overwrite this method!
+     *
+     * @return configured {@link HostConfig}
+     */
+    protected HostConfig buildHostConfig()
+    {
+        HostConfig hostConfig = new HostConfig();
+
+        if (!getTmpDirectories().isEmpty() && OSUtils.isLinux())
+        {
+            Map<String, String> tmpDirectories = new HashMap<>();
+            getTmpDirectories().forEach(directory -> tmpDirectories.put(directory, ""));
+            hostConfig.withTmpFs(tmpDirectories);
+        }
+
+        return hostConfig;
+    }
+
     protected void createContainer(DockerClient dockerClient) throws InterruptedException
     {
         pullImage(dockerClient);
         CreateContainerCmd createContainerCmd = dockerClient.createContainerCmd(properties.getDockerImage()) // NOSONAR
                 .withLabels(getAllLabels())
-                .withPublishAllPorts(Boolean.TRUE)
-                .withEnv(getEnvs());
+                .withEnv(getEnvs())
+                .withHostConfig(buildHostConfig());
+
         adjustCreateCommand(createContainerCmd);
         String containerId = createContainerCmd.exec().getId();
         dockerClient.startContainerCmd(containerId).exec();
