@@ -5,7 +5,7 @@
   <name>springboot-testcontainer-common</name>
   <description>Common utils for springboot-container</description>
   <url>https://github.com/springboot-testcontainer/springboot-testcontainer-common</url>
-  <version>0.1.0-RC11</version>
+  <version>0.1.0-RC12</version>
 
   <properties>
     <!-- System -->
@@ -40,7 +40,7 @@
     <dependency>
       <groupId>com.github.docker-java</groupId>
       <artifactId>docker-java</artifactId>
-      <version>3.1.0-rc-7</version>
+      <version>3.1.0-rc-8</version>
     </dependency>
     <dependency>
       <groupId>javax.activation</groupId>

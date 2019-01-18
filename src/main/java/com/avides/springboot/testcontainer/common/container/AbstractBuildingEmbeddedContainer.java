@@ -116,13 +116,15 @@ public abstract class AbstractBuildingEmbeddedContainer<P extends AbstractEmbedd
     /**
      * Builds {@link HostConfig}
      * <p>
-     * There is normally no need to overwrite this method!
+     * There is normally no need to overwrite this method!<br>
+     * If you need to overwrite this method, make sure that all ports are published (necessary for mac)!
      *
      * @return configured {@link HostConfig}
      */
     protected HostConfig buildHostConfig()
     {
         HostConfig hostConfig = new HostConfig();
+        hostConfig.withPublishAllPorts(Boolean.TRUE);
 
         if (!getTmpDirectories().isEmpty() && OSUtils.isLinux())
         {
