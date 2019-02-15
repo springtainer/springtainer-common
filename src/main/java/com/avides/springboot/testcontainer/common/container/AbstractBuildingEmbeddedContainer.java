@@ -153,7 +153,8 @@ public abstract class AbstractBuildingEmbeddedContainer<P extends AbstractEmbedd
     /**
      * Adjust prepared {@link CreateContainerCmd} before create
      *
-     * @param createContainerCmd prepared command
+     * @param createContainerCmd
+     *            prepared command
      */
     protected void adjustCreateCommand(CreateContainerCmd createContainerCmd)
     {
