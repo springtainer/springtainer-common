@@ -5,7 +5,6 @@ import java.net.URI;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.core.env.ConfigurableEnvironment;
 
-import com.avides.springboot.testcontainer.common.OSUtils;
 import com.github.dockerjava.api.DockerClient;
 import com.github.dockerjava.api.command.InspectContainerResponse;
 import com.github.dockerjava.api.model.ExposedPort;
@@ -27,13 +26,10 @@ public abstract class AbstractEmbeddedContainer<P extends AbstractEmbeddedContai
 
         if (StringUtils.isEmpty(dockerHost))
         {
-            if (OSUtils.isMac())
-            {
-                return "localhost";
-            }
+            return "localhost";
 
-            String containerNetwork = environment.getProperty("embedded.container.container-network", "bridge");
-            return containerInfo.getNetworkSettings().getNetworks().get(containerNetwork).getIpAddress();
+            // String containerNetwork = environment.getProperty("embedded.container.container-network", "bridge");
+            // return containerInfo.getNetworkSettings().getNetworks().get(containerNetwork).getIpAddress();
         }
 
         return new URI(dockerHost).getHost();
@@ -41,10 +37,10 @@ public abstract class AbstractEmbeddedContainer<P extends AbstractEmbeddedContai
 
     protected int getContainerPort(int exposed)
     {
-        if (OSUtils.isLinux())
-        {
-            return exposed;
-        }
+        // if (OSUtils.isLinux())
+        // {
+        // return exposed;
+        // }
 
         return getMappedPort(exposed);
     }
