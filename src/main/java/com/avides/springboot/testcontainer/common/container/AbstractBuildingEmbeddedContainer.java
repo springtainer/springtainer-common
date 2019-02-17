@@ -16,14 +16,13 @@ import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MapPropertySource;
 
 import com.avides.springboot.testcontainer.common.Labels;
-import com.avides.springboot.testcontainer.common.OSUtils;
+import com.avides.springboot.testcontainer.common.TestcontainerContext;
 import com.avides.springboot.testcontainer.common.util.IssuerUtil;
 import com.github.dockerjava.api.DockerClient;
 import com.github.dockerjava.api.command.CreateContainerCmd;
 import com.github.dockerjava.api.exception.InternalServerErrorException;
 import com.github.dockerjava.api.exception.NotFoundException;
 import com.github.dockerjava.api.model.HostConfig;
-import com.github.dockerjava.core.DockerClientBuilder;
 import com.github.dockerjava.core.command.PullImageResultCallback;
 
 import lombok.SneakyThrows;
@@ -44,7 +43,7 @@ public abstract class AbstractBuildingEmbeddedContainer<P extends AbstractEmbedd
 
         log.info("Starting {}-container with {}", service, properties);
 
-        try (DockerClient dockerClient = DockerClientBuilder.getInstance().build())
+        try (DockerClient dockerClient = TestcontainerContext.createDockerClient())
         {
             createContainer(dockerClient);
 
@@ -62,12 +61,12 @@ public abstract class AbstractBuildingEmbeddedContainer<P extends AbstractEmbedd
             }
             else
             {
-                log.error(e.getMessage(), e);
+                log.error("Unknown error pulling image", e);
             }
         }
         catch (ContainerStartupFailedException e)
         {
-            killContainer(DockerClientBuilder.getInstance().build());
+            killContainer(TestcontainerContext.createDockerClient());
             log.error("Failed to start {}-container", service, e);
         }
     }
@@ -126,11 +125,12 @@ public abstract class AbstractBuildingEmbeddedContainer<P extends AbstractEmbedd
         HostConfig hostConfig = new HostConfig();
         hostConfig.withPublishAllPorts(Boolean.TRUE);
 
-        if (!getTmpDirectories().isEmpty() && OSUtils.isLinux())
+        if (!getTmpDirectories().isEmpty() && TestcontainerContext.isRunningOnLinux())
         {
             Map<String, String> tmpDirectories = new HashMap<>();
             getTmpDirectories().forEach(directory -> tmpDirectories.put(directory, ""));
             hostConfig.withTmpFs(tmpDirectories);
+            log.debug("tmpfs enabled for {}-container", service);
         }
 
         return hostConfig;
@@ -209,7 +209,7 @@ public abstract class AbstractBuildingEmbeddedContainer<P extends AbstractEmbedd
     {
         if (event instanceof ContextStoppedEvent || event instanceof ContextClosedEvent)
         {
-            try (DockerClient dockerClient = DockerClientBuilder.getInstance().build())
+            try (DockerClient dockerClient = TestcontainerContext.createDockerClient())
             {
                 log.info("Stopping {}-container...", service);
                 killContainer(dockerClient);
@@ -217,8 +217,7 @@ public abstract class AbstractBuildingEmbeddedContainer<P extends AbstractEmbedd
             }
             catch (NotFoundException e)
             {
-                log.debug(e.getMessage(), e);
-                log.info("{}-container not found.. ignored", service);
+                log.info("{}-container not found.. ignored", service, e);
             }
         }
     }

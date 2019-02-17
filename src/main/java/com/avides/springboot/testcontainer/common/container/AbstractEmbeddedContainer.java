@@ -24,28 +24,15 @@ public abstract class AbstractEmbeddedContainer<P extends AbstractEmbeddedContai
     {
         String dockerHost = System.getProperty("DOCKER_HOST", System.getenv("DOCKER_HOST"));
 
-        if (StringUtils.isEmpty(dockerHost))
+        if (StringUtils.isNotBlank(dockerHost))
         {
-            return "localhost";
-
-            // String containerNetwork = environment.getProperty("embedded.container.container-network", "bridge");
-            // return containerInfo.getNetworkSettings().getNetworks().get(containerNetwork).getIpAddress();
+            return new URI(dockerHost).getHost();
         }
 
-        return new URI(dockerHost).getHost();
+        return "localhost";
     }
 
     protected int getContainerPort(int exposed)
-    {
-        // if (OSUtils.isLinux())
-        // {
-        // return exposed;
-        // }
-
-        return getMappedPort(exposed);
-    }
-
-    private int getMappedPort(int exposed)
     {
         return Integer.parseInt(containerInfo.getNetworkSettings().getPorts().getBindings().get(new ExposedPort(exposed))[0].getHostPortSpec());
     }

@@ -15,10 +15,10 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import com.avides.springboot.testcontainer.common.TestcontainerContext;
 import com.avides.springboot.testcontainer.common.util.IssuerUtil;
 import com.github.dockerjava.api.DockerClient;
 import com.github.dockerjava.api.model.Container;
-import com.github.dockerjava.core.DockerClientBuilder;
 
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -30,16 +30,6 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class EmbeddedContainerCleanupAutoConfiguration
 {
-    public EmbeddedContainerCleanupAutoConfiguration()
-    {
-        /**
-         * Temporary hack
-         * <p>
-         * Will be fixed with next spring-cloud release
-         */
-        System.setProperty("spring.main.allow-bean-definition-overriding", "true");
-    }
-
     @ConditionalOnMissingBean(EmbeddedContainerCleanup.class)
     @Bean
     public EmbeddedContainerCleanup embeddedContainerCleanup(ContainerCleanupProperties properties)
@@ -62,7 +52,7 @@ public class EmbeddedContainerCleanupAutoConfiguration
             List<Container> issuerContainers = new ArrayList<>();
             List<Container> staleContainers = new ArrayList<>();
 
-            try (DockerClient dockerClient = DockerClientBuilder.getInstance().build())
+            try (DockerClient dockerClient = TestcontainerContext.createDockerClient())
             {
                 for (Container container : dockerClient.listContainersCmd().exec())
                 {
