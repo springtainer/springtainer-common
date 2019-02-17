@@ -39,6 +39,6 @@ public abstract class AbstractEmbeddedContainer<P extends AbstractEmbeddedContai
 
     protected void killContainer(DockerClient dockerClient)
     {
-        dockerClient.killContainerCmd(containerInfo.getId()).exec();
+        dockerClient.removeContainerCmd(containerInfo.getId()).withForce(Boolean.TRUE).withRemoveVolumes(Boolean.TRUE).exec();
     }
 }

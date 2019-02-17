@@ -81,7 +81,7 @@ public class EmbeddedContainerCleanupAutoConfiguration
 
                 for (Container staleContainer : staleContainers)
                 {
-                    dockerClient.killContainerCmd(staleContainer.getId()).exec();
+                    dockerClient.removeContainerCmd(staleContainer.getId()).withForce(Boolean.TRUE).withRemoveVolumes(Boolean.TRUE).exec();
                     log.warn("Stale container removed ({})", staleContainer.labels);
                 }
             }
