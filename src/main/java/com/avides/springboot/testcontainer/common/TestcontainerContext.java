@@ -1,5 +1,7 @@
 package com.avides.springboot.testcontainer.common;
 
+import org.apache.commons.lang.StringUtils;
+
 import com.github.dockerjava.api.DockerClient;
 import com.github.dockerjava.core.DockerClientBuilder;
 
@@ -14,7 +16,7 @@ public class TestcontainerContext
     {
         DockerClient dockerClient = DockerClientBuilder.getInstance().build();
 
-        if (osType == null)
+        if (StringUtils.isBlank(osType))
         {
             osType = dockerClient.infoCmd().exec().getOsType();
         }
@@ -24,6 +26,6 @@ public class TestcontainerContext
 
     public static boolean isRunningOnLinux()
     {
-        return "linux".equals(osType);
+        return "linux".equalsIgnoreCase(osType);
     }
 }

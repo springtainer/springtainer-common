@@ -116,7 +116,7 @@ public abstract class AbstractBuildingEmbeddedContainer<P extends AbstractEmbedd
      * Builds {@link HostConfig}
      * <p>
      * There is normally no need to overwrite this method!<br>
-     * If you need to overwrite this method, make sure that all ports are published (necessary for mac)!
+     * If you need to overwrite this method, make sure that all ports are published!
      *
      * @return configured {@link HostConfig}
      */
