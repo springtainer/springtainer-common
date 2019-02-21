@@ -15,10 +15,10 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import com.avides.springboot.testcontainer.common.TestcontainerContext;
 import com.avides.springboot.testcontainer.common.util.IssuerUtil;
 import com.github.dockerjava.api.DockerClient;
 import com.github.dockerjava.api.model.Container;
+import com.github.dockerjava.core.DockerClientBuilder;
 
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -52,7 +52,7 @@ public class EmbeddedContainerCleanupAutoConfiguration
             List<Container> issuerContainers = new ArrayList<>();
             List<Container> staleContainers = new ArrayList<>();
 
-            try (DockerClient dockerClient = TestcontainerContext.createDockerClient())
+            try (DockerClient dockerClient = DockerClientBuilder.getInstance().build())
             {
                 for (Container container : dockerClient.listContainersCmd().exec())
                 {
