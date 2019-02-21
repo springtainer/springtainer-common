@@ -16,7 +16,6 @@ import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MapPropertySource;
 
 import com.avides.springboot.testcontainer.common.Labels;
-import com.avides.springboot.testcontainer.common.OSUtils;
 import com.avides.springboot.testcontainer.common.util.IssuerUtil;
 import com.github.dockerjava.api.DockerClient;
 import com.github.dockerjava.api.command.CreateContainerCmd;
@@ -62,7 +61,7 @@ public abstract class AbstractBuildingEmbeddedContainer<P extends AbstractEmbedd
             }
             else
             {
-                log.error(e.getMessage(), e);
+                log.error("Unknown error pulling image", e);
             }
         }
         catch (ContainerStartupFailedException e)
@@ -117,7 +116,7 @@ public abstract class AbstractBuildingEmbeddedContainer<P extends AbstractEmbedd
      * Builds {@link HostConfig}
      * <p>
      * There is normally no need to overwrite this method!<br>
-     * If you need to overwrite this method, make sure that all ports are published (necessary for mac)!
+     * If you need to overwrite this method, make sure that all ports are published!
      *
      * @return configured {@link HostConfig}
      */
@@ -126,7 +125,7 @@ public abstract class AbstractBuildingEmbeddedContainer<P extends AbstractEmbedd
         HostConfig hostConfig = new HostConfig();
         hostConfig.withPublishAllPorts(Boolean.TRUE);
 
-        if (!getTmpDirectories().isEmpty() && OSUtils.isLinux())
+        if (!getTmpDirectories().isEmpty())
         {
             Map<String, String> tmpDirectories = new HashMap<>();
             getTmpDirectories().forEach(directory -> tmpDirectories.put(directory, ""));
@@ -216,8 +215,7 @@ public abstract class AbstractBuildingEmbeddedContainer<P extends AbstractEmbedd
             }
             catch (NotFoundException e)
             {
-                log.debug(e.getMessage(), e);
-                log.info("{}-container not found.. ignored", service);
+                log.info("{}-container not found.. ignored", service, e);
             }
         }
     }

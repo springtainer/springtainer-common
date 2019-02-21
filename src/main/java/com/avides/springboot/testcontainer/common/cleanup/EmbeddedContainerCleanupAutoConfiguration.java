@@ -30,16 +30,6 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class EmbeddedContainerCleanupAutoConfiguration
 {
-    public EmbeddedContainerCleanupAutoConfiguration()
-    {
-        /**
-         * Temporary hack
-         * <p>
-         * Will be fixed with next spring-cloud release
-         */
-        System.setProperty("spring.main.allow-bean-definition-overriding", "true");
-    }
-
     @ConditionalOnMissingBean(EmbeddedContainerCleanup.class)
     @Bean
     public EmbeddedContainerCleanup embeddedContainerCleanup(ContainerCleanupProperties properties)
@@ -91,7 +81,7 @@ public class EmbeddedContainerCleanupAutoConfiguration
 
                 for (Container staleContainer : staleContainers)
                 {
-                    dockerClient.killContainerCmd(staleContainer.getId()).exec();
+                    dockerClient.removeContainerCmd(staleContainer.getId()).withForce(Boolean.TRUE).withRemoveVolumes(Boolean.TRUE).exec();
                     log.warn("Stale container removed ({})", staleContainer.labels);
                 }
             }
