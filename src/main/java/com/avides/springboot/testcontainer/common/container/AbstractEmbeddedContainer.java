@@ -5,6 +5,7 @@ import java.net.URI;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.core.env.ConfigurableEnvironment;
 
+import com.avides.springboot.testcontainer.common.util.OSUtils;
 import com.github.dockerjava.api.DockerClient;
 import com.github.dockerjava.api.command.InspectContainerResponse;
 import com.github.dockerjava.api.model.ExposedPort;
@@ -22,30 +23,43 @@ public abstract class AbstractEmbeddedContainer<P extends AbstractEmbeddedContai
     @SneakyThrows
     protected String getContainerHost()
     {
-        String remoteHost = getRemoteHost();
-
-        if (StringUtils.isNotBlank(remoteHost))
+        if (StringUtils.isNotBlank(getRemoteHost()))
         {
-            return new URI(remoteHost).getHost();
+            return new URI(getRemoteHost()).getHost();
+        }
+
+        if (OSUtils.isMac())
+        {
+            return "localhost";
         }
 
         String containerNetwork = environment.getProperty("embedded.container.container-network", "bridge");
         return containerInfo.getNetworkSettings().getNetworks().get(containerNetwork).getIpAddress();
     }
 
+    private static String getRemoteHost()
+    {
+        return System.getProperty("DOCKER_HOST", System.getenv("DOCKER_HOST"));
+    }
+
     protected int getContainerPort(int exposed)
     {
         if (getRemoteHost() != null)
         {
-            return Integer.parseInt(containerInfo.getNetworkSettings().getPorts().getBindings().get(new ExposedPort(exposed))[0].getHostPortSpec());
+            return getMappedPort(exposed);
+        }
+
+        if (OSUtils.isMac())
+        {
+            return getMappedPort(exposed);
         }
 
         return exposed;
     }
 
-    private static String getRemoteHost()
+    private int getMappedPort(int exposed)
     {
-        return System.getProperty("DOCKER_HOST", System.getenv("DOCKER_HOST"));
+        return Integer.parseInt(containerInfo.getNetworkSettings().getPorts().getBindings().get(new ExposedPort(exposed))[0].getHostPortSpec());
     }
 
     protected void killContainer(DockerClient dockerClient)
