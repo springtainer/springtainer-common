@@ -44,7 +44,7 @@ public abstract class AbstractEmbeddedContainer<P extends AbstractEmbeddedContai
 
     protected int getContainerPort(int exposed)
     {
-        if (getRemoteHost() != null)
+        if (StringUtils.isNotBlank(getRemoteHost()))
         {
             return getMappedPort(exposed);
         }
