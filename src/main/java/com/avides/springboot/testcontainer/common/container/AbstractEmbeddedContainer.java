@@ -35,12 +35,12 @@ public abstract class AbstractEmbeddedContainer<P extends AbstractEmbeddedContai
 
     protected int getContainerPort(int exposed)
     {
-        if (getRemoteHost() == null)
+        if (getRemoteHost() != null)
         {
-            return exposed;
+            return Integer.parseInt(containerInfo.getNetworkSettings().getPorts().getBindings().get(new ExposedPort(exposed))[0].getHostPortSpec());
         }
 
-        return Integer.parseInt(containerInfo.getNetworkSettings().getPorts().getBindings().get(new ExposedPort(exposed))[0].getHostPortSpec());
+        return exposed;
     }
 
     private static String getRemoteHost()
