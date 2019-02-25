@@ -5,6 +5,7 @@ import java.net.URI;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.core.env.ConfigurableEnvironment;
 
+import com.avides.springboot.testcontainer.common.util.OSUtils;
 import com.github.dockerjava.api.DockerClient;
 import com.github.dockerjava.api.command.InspectContainerResponse;
 import com.github.dockerjava.api.model.ExposedPort;
@@ -22,17 +23,41 @@ public abstract class AbstractEmbeddedContainer<P extends AbstractEmbeddedContai
     @SneakyThrows
     protected String getContainerHost()
     {
-        String dockerHost = System.getProperty("DOCKER_HOST", System.getenv("DOCKER_HOST"));
-
-        if (StringUtils.isNotBlank(dockerHost))
+        if (StringUtils.isNotBlank(getRemoteHost()))
         {
-            return new URI(dockerHost).getHost();
+            return new URI(getRemoteHost()).getHost();
         }
 
-        return "localhost";
+        if (OSUtils.isMac())
+        {
+            return "localhost";
+        }
+
+        String containerNetwork = environment.getProperty("embedded.container.container-network", "bridge");
+        return containerInfo.getNetworkSettings().getNetworks().get(containerNetwork).getIpAddress();
+    }
+
+    private static String getRemoteHost()
+    {
+        return System.getProperty("DOCKER_HOST", System.getenv("DOCKER_HOST"));
     }
 
     protected int getContainerPort(int exposed)
+    {
+        if (StringUtils.isNotBlank(getRemoteHost()))
+        {
+            return getMappedPort(exposed);
+        }
+
+        if (OSUtils.isMac())
+        {
+            return getMappedPort(exposed);
+        }
+
+        return exposed;
+    }
+
+    private int getMappedPort(int exposed)
     {
         return Integer.parseInt(containerInfo.getNetworkSettings().getPorts().getBindings().get(new ExposedPort(exposed))[0].getHostPortSpec());
     }
