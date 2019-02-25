@@ -22,11 +22,11 @@ public abstract class AbstractEmbeddedContainer<P extends AbstractEmbeddedContai
     @SneakyThrows
     protected String getContainerHost()
     {
-        String dockerHost = System.getProperty("DOCKER_HOST", System.getenv("DOCKER_HOST"));
+        String remoteHost = getRemoteHost();
 
-        if (StringUtils.isNotBlank(dockerHost))
+        if (StringUtils.isNotBlank(remoteHost))
         {
-            return new URI(dockerHost).getHost();
+            return new URI(remoteHost).getHost();
         }
 
         String containerNetwork = environment.getProperty("embedded.container.container-network", "bridge");
@@ -35,7 +35,17 @@ public abstract class AbstractEmbeddedContainer<P extends AbstractEmbeddedContai
 
     protected int getContainerPort(int exposed)
     {
+        if (getRemoteHost() == null)
+        {
+            return exposed;
+        }
+
         return Integer.parseInt(containerInfo.getNetworkSettings().getPorts().getBindings().get(new ExposedPort(exposed))[0].getHostPortSpec());
+    }
+
+    private static String getRemoteHost()
+    {
+        return System.getProperty("DOCKER_HOST", System.getenv("DOCKER_HOST"));
     }
 
     protected void killContainer(DockerClient dockerClient)
