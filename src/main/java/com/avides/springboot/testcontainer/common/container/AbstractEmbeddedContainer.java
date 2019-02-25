@@ -29,7 +29,8 @@ public abstract class AbstractEmbeddedContainer<P extends AbstractEmbeddedContai
             return new URI(dockerHost).getHost();
         }
 
-        return "localhost";
+        String containerNetwork = environment.getProperty("embedded.container.container-network", "bridge");
+        return containerInfo.getNetworkSettings().getNetworks().get(containerNetwork).getIpAddress();
     }
 
     protected int getContainerPort(int exposed)
