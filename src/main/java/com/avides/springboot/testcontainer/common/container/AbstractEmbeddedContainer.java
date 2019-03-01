@@ -2,6 +2,7 @@ package com.avides.springboot.testcontainer.common.container;
 
 import java.lang.reflect.Field;
 import java.net.URI;
+import java.net.URISyntaxException;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.core.env.ConfigurableEnvironment;
@@ -25,7 +26,6 @@ public abstract class AbstractEmbeddedContainer<P extends AbstractEmbeddedContai
 
     protected InspectContainerResponse containerInfo;
 
-    @SneakyThrows
     protected String getContainerHost()
     {
         if (StringUtils.isNotBlank(getDockerHost()))
@@ -43,6 +43,7 @@ public abstract class AbstractEmbeddedContainer<P extends AbstractEmbeddedContai
     }
 
     // See https://github.com/docker-java/docker-java/issues/1167 for further explanations
+    @SneakyThrows(URISyntaxException.class)
     private static String getDockerHost()
     {
         try
@@ -55,7 +56,8 @@ public abstract class AbstractEmbeddedContainer<P extends AbstractEmbeddedContai
         catch (IllegalArgumentException | IllegalAccessException | NoSuchFieldException | SecurityException e)
         {
             log.warn("Unable to resolve the dockerHost by the DefaultDockerClientConfig. Switching to env variables..", e);
-            return System.getProperty("DOCKER_HOST", System.getenv("DOCKER_HOST"));
+            String dockerHostProperty = System.getProperty("DOCKER_HOST", System.getenv("DOCKER_HOST"));
+            return StringUtils.isNotBlank(dockerHostProperty) ? new URI(dockerHostProperty).getHost() : null;
         }
     }
 
