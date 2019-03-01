@@ -49,7 +49,7 @@ public abstract class AbstractBuildingEmbeddedContainer<P extends AbstractEmbedd
 
             log.info("Checking {}-container... (Timeout: {}s)", service, Integer.valueOf(properties.getStartupTimeout()));
             long startupDuration = waitUntilReady(properties);
-            log.info("{}-container started (Duration: {}ms)", service, Long.valueOf(startupDuration));
+            log.info("{}-container started (Duration: {}ms, Host: {})", service, Long.valueOf(startupDuration), getContainerHost());
 
             environment.getPropertySources().addFirst(new MapPropertySource("embedded" + service + "Properties", providedProperties()));
         }
