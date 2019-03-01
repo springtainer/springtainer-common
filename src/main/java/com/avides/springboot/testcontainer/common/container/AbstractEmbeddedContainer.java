@@ -1,5 +1,6 @@
 package com.avides.springboot.testcontainer.common.container;
 
+import java.lang.reflect.Field;
 import java.net.URI;
 
 import org.apache.commons.lang.StringUtils;
@@ -9,9 +10,13 @@ import com.avides.springboot.testcontainer.common.util.OSUtils;
 import com.github.dockerjava.api.DockerClient;
 import com.github.dockerjava.api.command.InspectContainerResponse;
 import com.github.dockerjava.api.model.ExposedPort;
+import com.github.dockerjava.core.DefaultDockerClientConfig;
+import com.github.dockerjava.core.DefaultDockerClientConfig.Builder;
 
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 public abstract class AbstractEmbeddedContainer<P extends AbstractEmbeddedContainerProperties> implements EmbeddedContainer
 {
     protected ConfigurableEnvironment environment;
@@ -23,9 +28,9 @@ public abstract class AbstractEmbeddedContainer<P extends AbstractEmbeddedContai
     @SneakyThrows
     protected String getContainerHost()
     {
-        if (StringUtils.isNotBlank(getRemoteHost()))
+        if (StringUtils.isNotBlank(getDockerHost()))
         {
-            return new URI(getRemoteHost()).getHost();
+            return getDockerHost();
         }
 
         if (OSUtils.isMac())
@@ -37,6 +42,22 @@ public abstract class AbstractEmbeddedContainer<P extends AbstractEmbeddedContai
         return containerInfo.getNetworkSettings().getNetworks().get(containerNetwork).getIpAddress();
     }
 
+    private static String getDockerHost()
+    {
+        try
+        {
+            Builder builder = DefaultDockerClientConfig.createDefaultConfigBuilder();
+            Field declaredField = builder.getClass().getDeclaredField("dockerHost");
+            declaredField.setAccessible(true);
+            return ((URI) declaredField.get(builder)).getHost();
+        }
+        catch (IllegalArgumentException | IllegalAccessException | NoSuchFieldException | SecurityException e)
+        {
+            log.warn("Unable to resolve the dockerHost by the DefaultDockerClientConfig. Switching to env variables..", e);
+            return getRemoteHost();
+        }
+    }
+
     private static String getRemoteHost()
     {
         return System.getProperty("DOCKER_HOST", System.getenv("DOCKER_HOST"));
@@ -44,7 +65,7 @@ public abstract class AbstractEmbeddedContainer<P extends AbstractEmbeddedContai
 
     protected int getContainerPort(int exposed)
     {
-        if (StringUtils.isNotBlank(getRemoteHost()))
+        if (StringUtils.isNotBlank(getDockerHost()))
         {
             return getMappedPort(exposed);
         }
