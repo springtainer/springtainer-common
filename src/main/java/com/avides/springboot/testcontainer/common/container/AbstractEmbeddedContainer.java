@@ -42,6 +42,7 @@ public abstract class AbstractEmbeddedContainer<P extends AbstractEmbeddedContai
         return containerInfo.getNetworkSettings().getNetworks().get(containerNetwork).getIpAddress();
     }
 
+    // See https://github.com/docker-java/docker-java/issues/1167 for further explanations
     private static String getDockerHost()
     {
         try
@@ -54,13 +55,8 @@ public abstract class AbstractEmbeddedContainer<P extends AbstractEmbeddedContai
         catch (IllegalArgumentException | IllegalAccessException | NoSuchFieldException | SecurityException e)
         {
             log.warn("Unable to resolve the dockerHost by the DefaultDockerClientConfig. Switching to env variables..", e);
-            return getRemoteHost();
+            return System.getProperty("DOCKER_HOST", System.getenv("DOCKER_HOST"));
         }
-    }
-
-    private static String getRemoteHost()
-    {
-        return System.getProperty("DOCKER_HOST", System.getenv("DOCKER_HOST"));
     }
 
     protected int getContainerPort(int exposed)
