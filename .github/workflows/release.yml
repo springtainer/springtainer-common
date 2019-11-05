@@ -18,6 +18,13 @@ jobs:
 
       - uses: actions/checkout@v1
 
+      - uses: actions/cache@v1
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
+
       - name: setup-release
         env:
           GITHUB_USERNAME: x-access-token
@@ -31,4 +38,3 @@ jobs:
 
 #      - name: sonarqube
 #        run: mvn sonar:sonar -Dsonar.host.url=http://sonarqube.avidesmedia/
-
