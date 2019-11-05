@@ -8,8 +8,8 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: setup-docker
-        uses: docker-practice/actions-setup-docker@0.0.1
+#      - name: setup-docker
+#        uses: docker-practice/actions-setup-docker@0.0.1
 
       - name: setup-java
         uses: actions/setup-java@v1
@@ -25,11 +25,13 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-maven-
 
-      - name: release
-        run: mvn clean --settings settings.xml deploy -Dmaven.test.skip=true
+      - name: Deploy to Github Package Registry
         env:
-          GITHUB_USERNAME: x-access-token
-          GITHUB_PASSWORD: ${{ secrets.GITHUB_ACCESS_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          mkdir ~/.m2
+          echo "<settings><servers><server><id>github</id><username>loefflefarn</username><password>${GITHUB_TOKEN}</password></server></servers></settings>" > ~/.m2/settings.xml
+          mvn deploy
 
 #      - name: sonarqube
 #        run: mvn sonar:sonar -Dsonar.host.url=http://sonarqube.avidesmedia/
