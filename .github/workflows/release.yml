@@ -31,4 +31,3 @@ jobs:
 
 #      - name: sonarqube
 #        run: mvn sonar:sonar -Dsonar.host.url=http://sonarqube.avidesmedia/
-
