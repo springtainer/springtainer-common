@@ -22,17 +22,15 @@ jobs:
 
       - name: setup-maven-settings
         uses: s4u/maven-settings-action@v1
-#        env:
-#          gpgPassphrase: ${{ secrets.gpgPassphrase }}
-#          ossrhUsername: ${{ secrets.ossrhUsername }}
-#          ossrhPassword: ${{ secrets.ossrhPassword }}
+        #        env:
+        #          gpgPassphrase: ${{ secrets.gpgPassphrase }}
+        #          ossrhUsername: ${{ secrets.ossrhUsername }}
+        #          ossrhPassword: ${{ secrets.ossrhPassword }}
         with:
           servers: '[{"id": "ossrh", "username": "${env.ossrhUsername}", "password": "${env.ossrhPassword}"}]'
           properties: '[{"gpg.executable": "gpg"}, {"gpg.passphrase": "${env.gpgPassphrase}"}]'
           sonatypeSnapshots: true
-
-      - run: cat ~/.m2/settings.xml
-          shell: bash
+        run: cat ~/.m2/settings.xml
 
 #      - name: maven-deploy
 #        run: mvn clean deploy -Dmaven.test.skip=true
