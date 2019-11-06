@@ -24,7 +24,7 @@ jobs:
         uses: s4u/maven-settings-action@v1
         with:
           servers: '[{"id": "ossrh", "username": "${env.ossrhUsername}", "password": "${env.ossrhPassword}"}]'
-          properties: '[{"gpg.executable": "gpg"}, {"gpg.passphrase": "${env.gpgPassphrase}"}]'
+          properties: '[{"gpg.executable": "gpg2"}, {"gpg.passphrase": "${env.gpgPassphrase}"}]'
           sonatypeSnapshots: true
 
       - name: maven-deploy
