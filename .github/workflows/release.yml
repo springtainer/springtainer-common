@@ -19,7 +19,7 @@ jobs:
         env:
           gpgPrivateKey: ${{ secrets.gpgPrivateKey }}
         run: |
-          sudo apt install gpg2 -y
+          sudo apt-get install gnupg2 -y
           echo ${gpgPrivateKey} | base64 --decode | gpg --batch --import
 
       - name: setup-maven-settings
