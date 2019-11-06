@@ -23,7 +23,7 @@ jobs:
       - name: setup-maven-settings
         uses: s4u/maven-settings-action@v1
         with:
-          servers: '[{"id": "ossrh", "username": "${ossrhUsername}", "password": "${ossrhPassword}"}, {"id": "github", "username": "x-access-token", "password", "${GITHUB_TOKEN}"}]'
+          servers: '[{"id": "ossrh", "username": "${ossrhUsername}", "password": "${ossrhPassword}"}, {"id": "github", "username": "x-access-token", "password": "${GITHUB_TOKEN}"}]'
           properties: '[{"gpg.executable": "gpg"}, {"gpg.passphrase": "${gpgPassphrase}"}]'
           sonatypeSnapshots: true
 
