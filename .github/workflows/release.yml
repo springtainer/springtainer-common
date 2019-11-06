@@ -1,7 +1,7 @@
 on:
   push:
     branches:
-      - master
+      - LIBS-553
 
 jobs:
   release:
