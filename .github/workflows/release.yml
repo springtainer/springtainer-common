@@ -43,6 +43,6 @@ jobs:
         run: mvn clean verify
 
       - name: codacy
-        uses: mrfyda/codacy-analysis-cli-action@v1
+        uses: mrfyda/codacy-analysis-cli-action@v1.0
         with:
           project-token: ${{ secrets.GITHUB_TOKEN }}
