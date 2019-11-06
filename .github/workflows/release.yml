@@ -18,15 +18,13 @@ jobs:
       - name: setup-gpg
         env:
           gpgPrivateKey: ${{ secrets.gpgPrivateKey }}
-        run: |
-          sudo apt-get install gnupg2 -y
-          echo ${gpgPrivateKey} | base64 --decode | gpg --batch --import
+        run: echo ${gpgPrivateKey} | base64 --decode | gpg --batch --import
 
       - name: setup-maven-settings
         uses: s4u/maven-settings-action@v1
         with:
           servers: '[{"id": "ossrh", "username": "${env.ossrhUsername}", "password": "${env.ossrhPassword}"}]'
-          properties: '[{"gpg.executable": "gpg2"}, {"gpg.passphrase": "${env.gpgPassphrase}"}]'
+          properties: '[{"gpg.executable": "gpg"}, {"gpg.passphrase": "${env.gpgPassphrase}"}]'
           sonatypeSnapshots: true
 
       - name: maven-deploy
@@ -34,4 +32,4 @@ jobs:
           gpgPassphrase: ${{ secrets.gpgPassphrase }}
           ossrhUsername: ${{ secrets.ossrhUsername }}
           ossrhPassword: ${{ secrets.ossrhPassword }}
-        run: mvn clean deploy -Dmaven.test.skip=true
+        run: mvn clean deploy -Dmaven.test.skip=true -X
