@@ -7,8 +7,12 @@ jobs:
   release:
     runs-on: ubuntu-latest
     steps:
-      - name: checkout
-        uses: actions/checkout@v1
+      - name: caching
+        uses: actions/cache@v1
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-maven-
 
       - name: setup-java
         uses: actions/setup-java@v1
@@ -27,23 +31,20 @@ jobs:
           properties: '[{"gpg.executable": "gpg"}, {"gpg.passphrase": "${gpgPassphrase}"}]'
           sonatypeSnapshots: true
 
-      - uses: actions/cache@v1
-        with:
-          path: ~/.m2/repository
-          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
-          restore-keys: ${{ runner.os }}-maven-
+      - name: checkout
+        uses: actions/checkout@v1
 
-      - name: maven-deploy
+      - name: deploy
         env:
           gpgPassphrase: ${{ secrets.gpgPassphrase }}
           ossrhUsername: ${{ secrets.ossrhUsername }}
           ossrhPassword: ${{ secrets.ossrhPassword }}
           githubToken: ${{ secrets.GITHUB_TOKEN }}
-        run: mvn clean verify
+        run: mvn clean deploy
 
-      - name: codacy
+      - name: code-coverage
         env:
-          CODACY_PROJECT_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CODACY_PROJECT_TOKEN: ${{ secrets.CODACY_PROJECT_TOKEN }}
         run: |
           wget -O ~/codacy-coverage-reporter-assembly.jar https://github.com/codacy/codacy-coverage-reporter/releases/download/4.0.5/codacy-coverage-reporter-4.0.5-assembly.jar
           java -jar ~/codacy-coverage-reporter-assembly.jar report -l Java -r target/site/jacoco/jacoco.xml
