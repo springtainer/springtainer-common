@@ -23,7 +23,7 @@ jobs:
       - name: setup-maven-settings
         uses: s4u/maven-settings-action@v1
         with:
-          servers: '[{"id": "ossrh", "username": "${ossrhUsername}", "password": "${ossrhPassword}"}, {"id": "github", "username": "x-access-token", "password": "${GITHUB_TOKEN}"}]'
+          servers: '[{"id": "ossrh", "username": "${ossrhUsername}", "password": "${ossrhPassword}"}, {"id": "github", "username": "x-access-token", "password": "${githubToken}"}]'
           properties: '[{"gpg.executable": "gpg"}, {"gpg.passphrase": "${gpgPassphrase}"}]'
           sonatypeSnapshots: true
 
@@ -31,18 +31,19 @@ jobs:
         with:
           path: ~/.m2/repository
           key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
-          restore-keys: |
-            ${{ runner.os }}-maven-
+          restore-keys: ${{ runner.os }}-maven-
 
       - name: maven-deploy
         env:
           gpgPassphrase: ${{ secrets.gpgPassphrase }}
           ossrhUsername: ${{ secrets.ossrhUsername }}
           ossrhPassword: ${{ secrets.ossrhPassword }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          githubToken: ${{ secrets.GITHUB_TOKEN }}
         run: mvn clean verify
 
       - name: codacy
-        uses: mrfyda/codacy-analysis-cli-action@v1.0
-        with:
-          project-token: ${{ secrets.GITHUB_TOKEN }}
+        env:
+          CODACY_PROJECT_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          wget -O ~/codacy-coverage-reporter-assembly.jar https://github.com/codacy/codacy-coverage-reporter/releases/download/4.0.5/codacy-coverage-reporter-4.0.5-assembly.jar
+          java -jar ~/codacy-coverage-reporter-assembly.jar report -l Java -r target/site/jacoco/jacoco.xml
