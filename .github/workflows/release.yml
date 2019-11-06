@@ -27,10 +27,22 @@ jobs:
           properties: '[{"gpg.executable": "gpg"}, {"gpg.passphrase": "${gpgPassphrase}"}]'
           sonatypeSnapshots: true
 
+      - uses: actions/cache@v1
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
+
       - name: maven-deploy
         env:
           gpgPassphrase: ${{ secrets.gpgPassphrase }}
           ossrhUsername: ${{ secrets.ossrhUsername }}
           ossrhPassword: ${{ secrets.ossrhPassword }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: mvn clean deploy -Dmaven.test.skip=true
+        run: mvn clean verify
+
+      - name: codacy
+        uses: mrfyda/codacy-analysis-cli-action@v1
+        with:
+          project-token: ${{ secrets.GITHUB_TOKEN }}
