@@ -30,7 +30,5 @@ jobs:
           servers: '[{"id": "ossrh", "username": "${env.ossrhUsername}", "password": "${env.ossrhPassword}"}]'
           properties: '[{"gpg.executable": "gpg"}, {"gpg.passphrase": "${env.gpgPassphrase}"}]'
           sonatypeSnapshots: true
-        run: cat ~/.m2/settings.xml
 
-#      - name: maven-deploy
-#        run: mvn clean deploy -Dmaven.test.skip=true
+      - run: cat ~/.m2/settings.xml
