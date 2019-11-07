@@ -1,11 +1,36 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
+
   <groupId>com.avides.springboot.testcontainer</groupId>
   <artifactId>springboot-testcontainer-common</artifactId>
+  <version>1.0.0</version>
+
   <name>springboot-testcontainer-common</name>
   <description>Common utils for springboot-container</description>
   <url>https://github.com/springboot-testcontainer/springboot-testcontainer-common</url>
-  <version>0.2.0-SNAPSHOT</version>
+  <organization>
+    <name>AVIDES Media AG</name>
+    <url>http://www.avides.com</url>
+  </organization>
+  <licenses>
+    <license>
+      <name>MIT License</name>
+      <url>http://www.opensource.org/licenses/mit-license.php</url>
+    </license>
+  </licenses>
+
+  <developers>
+    <developer>
+      <name>Julian Eggers</name>
+      <email>eggers.julian@gmail.com</email>
+    </developer>
+  </developers>
+
+  <scm>
+    <url>https://github.com/springboot-testcontainer/springboot-testcontainer-common</url>
+    <connection>scm:git:https://github.com/springboot-testcontainer/springboot-testcontainer-common.git</connection>
+    <developerConnection>scm:git:https://github.com/springboot-testcontainer/springboot-testcontainer-common.git</developerConnection>
+  </scm>
 
   <properties>
     <!-- System -->
@@ -32,7 +57,7 @@
     <nexus-staging-maven-plugin.version>1.6.8</nexus-staging-maven-plugin.version>
     <!-- Spring -->
     <spring.version>5.2.1.RELEASE</spring.version>
-    <spring-boot.version>2.2.0.RELEASE</spring-boot.version>
+    <spring-boot.version>2.2.1.RELEASE</spring-boot.version>
   </properties>
 
   <dependencies>
@@ -132,26 +157,6 @@
     </dependency>
   </dependencies>
 
-  <scm>
-    <url>https://github.com/springboot-testcontainer/springboot-testcontainer-common</url>
-    <connection>scm:git:https://github.com/springboot-testcontainer/springboot-testcontainer-common.git</connection>
-    <developerConnection>scm:git:https://github.com/springboot-testcontainer/springboot-testcontainer-common.git</developerConnection>
-  </scm>
-
-  <developers>
-    <developer>
-      <name>Julian Eggers</name>
-      <email>eggers.julian@gmail.com</email>
-    </developer>
-  </developers>
-
-  <licenses>
-    <license>
-      <name>MIT License</name>
-      <url>http://www.opensource.org/licenses/mit-license.php</url>
-    </license>
-  </licenses>
-
   <build>
     <plugins>
       <!-- BUILD AND FILES -->
@@ -204,6 +209,13 @@
             <goals>
               <goal>sign</goal>
             </goals>
+            <configuration>
+              <!-- Hopefully fixed in version 1.7 ? (https://issues.apache.org/jira/browse/MGPG-59) -->
+              <gpgArguments>
+                <arg>--pinentry-mode</arg>
+                <arg>loopback</arg>
+              </gpgArguments>
+            </configuration>
           </execution>
         </executions>
       </plugin>
