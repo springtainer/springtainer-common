@@ -7,13 +7,6 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: caching
-        uses: actions/cache@v1
-        with:
-          path: ~/.m2/repository
-          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
-          restore-keys: ${{ runner.os }}-maven-
-
       - name: setup-docker
         uses: docker-practice/actions-setup-docker@0.0.1
 
@@ -24,6 +17,13 @@ jobs:
 
       - name: checkout
         uses: actions/checkout@v1
+
+      - name: caching
+        uses: actions/cache@v1
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-maven-
 
       - name: compile
         run: mvn clean compile test-compile
