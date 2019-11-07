@@ -43,10 +43,3 @@ jobs:
           ossrhPassword: ${{ secrets.ossrhPassword }}
           githubToken: ${{ secrets.GITHUB_TOKEN }}
         run: mvn clean deploy
-
-      - name: code-coverage
-        env:
-          CODACY_PROJECT_TOKEN: ${{ secrets.CODACY_PROJECT_TOKEN }}
-        run: |
-          wget -O ~/codacy-coverage-reporter-assembly.jar https://github.com/codacy/codacy-coverage-reporter/releases/download/4.0.5/codacy-coverage-reporter-4.0.5-assembly.jar
-          java -jar ~/codacy-coverage-reporter-assembly.jar report -l Java -r target/site/jacoco/jacoco.xml
