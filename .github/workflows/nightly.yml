@@ -1,3 +1,5 @@
+name: nightly
+
 on:
   schedule:
     - cron: 0 0 * * *
@@ -26,7 +28,5 @@ jobs:
       - name: integration-tests
         run: mvn failsafe:integration-test failsafe:verify
 
-      # Deploy RELEASE every night? To discuss with the whole team...
-
-#      - name: sonarqube
-#        run: mvn sonar:sonar -Dsonar.host.url=http://sonarqube.avidesmedia/
+      - name: sonarqube
+        run: mvn sonar:sonar -Dsonar.host.url=http://sonarqube.avidesmedia/

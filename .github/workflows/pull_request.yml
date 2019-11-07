@@ -1,3 +1,5 @@
+name: pull_request
+
 on: [push]
 
 jobs:
@@ -24,8 +26,18 @@ jobs:
       - name: integration-tests
         run: mvn failsafe:integration-test failsafe:verify
 
+      - name: sonarqube
+        run: cat ${GITHUB_EVENT_PATH}
+
       #      - name: sonarqube
-      #        run: mvn sonar:sonar -Dsonar.host.url=http://sonarqube.avidesmedia/
+      #        run: |
+      #          mvn sonar:sonar \
+      #            -Dsonar.analysis.preview \
+      #            -Dsonar.issuesReport.console.enable=true \
+      #            -Dsonar.projectKey=springboot-testcontainer_springboot-testcontainer-common \
+      #            -Dsonar.organization=springboot-testcontainer \
+      #            -Dsonar.host.url=https://sonarcloud.io \
+      #            -Dsonar.login=f463548288e26f4df00c3066ee432161caf766f8
 
       - name: pom-analyse
         run: mvn enforcer:enforce
