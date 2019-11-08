@@ -47,6 +47,7 @@ jobs:
             -Dsonar.sources=./src \
             -Dsonar.github.repository=${GITHUB_REPOSITORY} \
             -Dsonar.github.oauth=${SONAR_TOKEN} \
+            -Dsonar.projectKey=springboot-testcontainer_springboot-testcontainer-common \
             -Dsonar.java.binaries=./target/classes -X
 
       - name: pom-analyse
