@@ -39,14 +39,12 @@ jobs:
       - name: sonarqube
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          SONAR_TOKEN: ${{ secrets.CUSTOM_SONAR_TOKEN }}
         run: |
           sonar-scanner \
             -Dsonar.host.url=http://sonarqube.avidesmedia.de/ \
             -Dsonar.pullrequest.key=19 \
             -Dsonar.sources=./src \
             -Dsonar.github.repository=${GITHUB_REPOSITORY} \
-            -Dsonar.github.oauth=${SONAR_TOKEN} \
             -Dsonar.projectKey=springboot-testcontainer_springboot-testcontainer-common \
             -Dsonar.java.binaries=./target/classes -X
 
