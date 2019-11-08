@@ -43,3 +43,4 @@ jobs:
           ossrhPassword: ${{ secrets.ossrhPassword }}
           githubToken: ${{ secrets.GITHUB_TOKEN }}
         run: mvn clean deploy
+
