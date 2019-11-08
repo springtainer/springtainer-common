@@ -44,7 +44,9 @@ jobs:
             -Dsonar.host.url=http://sonarqube.avidesmedia.de/ \
             -Dsonar.pullrequest.key=19 \
             -Dsonar.sources=./src \
-            -Dsonar.projectKey=springboot-testcontainer_springboot-testcontainer-common \
+            -Dsonar.github.repository=${GITHUB_REPOSITORY} \
+            -Dsonar.github.oauth=${GITHUB_TOKEN} \
+            -Dsonar.projectKey=${GITHUB_REPOSITORY} \
             -Dsonar.java.binaries=./target/classes -X
 
       - name: pom-analyse
