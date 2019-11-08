@@ -42,7 +42,7 @@ jobs:
         run: sonar-scanner
           -Dsonar.login=${{ secrets.SONAR_TOKEN }}
           -Dsonar.organization=springboot-testcontainer
-          -Dsonar.host.url=https://sonarcloud.io/
+          -Dsonar.host.url=http://sonarqube.avidesmedia.de/
           -Dsonar.projectKey=springboot-testcontainer_springboot-testcontainer-common
           -Dsonar.java.binaries=./target/classes
 
