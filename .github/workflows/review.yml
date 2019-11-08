@@ -40,7 +40,6 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: sonar-scanner
-          -Dsonar.login=${{ secrets.SONAR_TOKEN }}
           -Dsonar.organization=springboot-testcontainer
           -Dsonar.host.url=http://sonarqube.avidesmedia.de/
           -Dsonar.projectKey=springboot-testcontainer_springboot-testcontainer-common
