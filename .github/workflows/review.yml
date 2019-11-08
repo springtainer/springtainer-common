@@ -4,7 +4,7 @@ on: [push]
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
 
     steps:
       - name: setup-docker
@@ -40,9 +40,7 @@ jobs:
         run: |
           export SONAR_ORGANIZATION=$(echo ${GITHUB_REPOSITORY} | cut -d / -f 1)
           mvn sonar:sonar \
-            -Dsonar.host.url=https://sonarcloud.io/ \
-            -Dsonar.login=${{ secrets.SONAR_TOKEN }} \
-            -Dsonar.organization=${SONAR_ORGANIZATION} \
+            -Dsonar.host.url=https://sonarqube.avidesmedia.de/ \
             -Dsonar.projectKey=${GITHUB_REPOSITORY//\//_} \
             -Dsonar.java.binaries=./target/classes
 
