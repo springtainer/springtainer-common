@@ -4,7 +4,7 @@ on: [push]
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
 
     steps:
       - name: setup-docker
@@ -33,6 +33,9 @@ jobs:
 
       - name: integration-tests
         run: mvn failsafe:integration-test failsafe:verify
+
+      - name: debugging
+        run: echo ${GITHUB_REPOSITORY//\//_}
 
       - name: setup-sonarqube
         uses: warchant/setup-sonar-scanner@v1
