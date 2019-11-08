@@ -36,6 +36,18 @@ jobs:
           key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-maven-
 
+      - name: sonar-analyse
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          export SONAR_ORGANIZATION=$(echo ${GITHUB_REPOSITORY} | cut -d / -f 1)
+          mvn sonar:sonar \
+            -Dsonar.host.url=https://sonarcloud.io/ \
+            -Dsonar.login=${{ secrets.SONAR_TOKEN }} \
+            -Dsonar.organization=${SONAR_ORGANIZATION} \
+            -Dsonar.projectKey=${GITHUB_REPOSITORY//\//_} \
+            -Dsonar.java.binaries=./target/classes
+
       - name: deploy
         env:
           gpgPassphrase: ${{ secrets.gpgPassphrase }}
@@ -43,4 +55,3 @@ jobs:
           ossrhPassword: ${{ secrets.ossrhPassword }}
           githubToken: ${{ secrets.GITHUB_TOKEN }}
         run: mvn clean deploy
-

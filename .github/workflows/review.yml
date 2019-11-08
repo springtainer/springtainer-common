@@ -35,6 +35,8 @@ jobs:
         run: mvn failsafe:integration-test failsafe:verify
 
       - name: sonar-analyse
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           export SONAR_ORGANIZATION=$(echo ${GITHUB_REPOSITORY} | cut -d / -f 1)
           mvn sonar:sonar \
