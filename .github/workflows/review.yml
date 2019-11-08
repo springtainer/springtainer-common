@@ -40,6 +40,8 @@ jobs:
         run: |
           export SONAR_ORGANIZATION=$(echo ${GITHUB_REPOSITORY} | cut -d / -f 1)
           mvn sonar:sonar \
+            -Dsonar.analysis.preview \
+            -Dsonar.issuesReport.console.enable=true \
             -Dsonar.host.url=https://sonarcloud.io/ \
             -Dsonar.login=${{ secrets.SONAR_TOKEN }} \
             -Dsonar.organization=${SONAR_ORGANIZATION} \
