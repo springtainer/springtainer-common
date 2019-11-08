@@ -39,9 +39,10 @@ jobs:
       - name: sonarqube
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: sonar-scanner
-          -Dsonar.host.url=http://sonarqube.avidesmedia.de/
-          -Dsonar.projectKey=springboot-testcontainer_springboot-testcontainer-common
+        run: sonar-scanner \
+          -Dsonar.host.url=http://sonarqube.avidesmedia.de/ \
+          -Dsonar.sources=./src \
+          -Dsonar.projectKey=springboot-testcontainer_springboot-testcontainer-common \
           -Dsonar.java.binaries=./target/classes
 
       - name: pom-analyse
