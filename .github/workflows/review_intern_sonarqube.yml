@@ -41,7 +41,6 @@ jobs:
           mvn sonar:sonar \
             -Dsonar.analysis.mode=preview \
             -Dsonar.host.url=http://sonarqube.avidesmedia.de/ \
-            -Dsonar.branch.name=${GITHUB_REF} \
             -Dsonar.github.oauth=${GITHUB_TOKEN} \
             -Dsonar.github.repository=${GITHUB_REPOSITORY} \
             -Dsonar.github.pullRequest=19 \
