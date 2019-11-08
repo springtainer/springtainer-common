@@ -34,15 +34,10 @@ jobs:
       - name: integration-tests
         run: mvn failsafe:integration-test failsafe:verify
 
-      - name: debugging
-        run: echo ${GITHUB_REPOSITORY//\//_}
-
-      - name: setup-sonarqube
-        uses: warchant/setup-sonar-scanner@v1
       - name: sonarqube
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: sonar-scanner
+        run: mvn sonar:sonar
           -Dsonar.analysis.preview
           -Dsonar.login=${{ secrets.SONAR_TOKEN }}
           -Dsonar.organization=springboot-testcontainer
