@@ -37,10 +37,11 @@ jobs:
       - name: sonarqube
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_ORGANIZATION: echo ${GITHUB_REPOSITORY} | cut -d / -f 1
         run: mvn sonar:sonar
           -Dsonar.analysis.preview
           -Dsonar.login=${{ secrets.SONAR_TOKEN }}
-          -Dsonar.organization=springboot-testcontainer
+          -Dsonar.organization=${SONAR_ORGANIZATION}
           -Dsonar.host.url=https://sonarcloud.io/
           -Dsonar.projectKey=${GITHUB_REPOSITORY//\//_}
           -Dsonar.java.binaries=./target/classes
