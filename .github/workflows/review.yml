@@ -45,7 +45,7 @@ jobs:
             -Dsonar.pullrequest.key=19 \
             -Dsonar.sources=./src \
             -Dsonar.github.repository=${GITHUB_REPOSITORY} \
-            -Dsonar.projectKey=springboot-testcontainer_springboot-testcontainer-common \
+            -Dsonar.projectKey=springboot-testcontainer-common \
             -Dsonar.branch.name=${GITHUB_REF} \
             -Dsonar.java.binaries=./target/classes -X
 
