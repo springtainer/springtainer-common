@@ -44,7 +44,6 @@ jobs:
             -Dsonar.issuesReport.console.enable=true \
             -Dsonar.branch.name=${GITHUB_REF} \
             -Dsonar.host.url=http://sonarqube.avidesmedia.de/ \
-            -Dsonar.organization=${SONAR_ORGANIZATION} \
             -Dsonar.projectKey=${GITHUB_REPOSITORY//\//_} \
             -Dsonar.java.binaries=./target/classes
 
