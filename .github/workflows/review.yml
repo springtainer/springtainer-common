@@ -42,6 +42,7 @@ jobs:
         run: |
           sonar-scanner \
             -Dsonar.host.url=http://sonarqube.avidesmedia.de/ \
+            -Dsonar.pullrequest.key=19 \
             -Dsonar.sources=./src \
             -Dsonar.projectKey=springboot-testcontainer_springboot-testcontainer-common \
             -Dsonar.java.binaries=./target/classes -X
