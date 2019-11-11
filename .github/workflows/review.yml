@@ -7,6 +7,12 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: test-docker
+        run: |
+          docker --version
+          docker ps -a
+          docker run hello-world
+      
       - name: setup-java
         uses: actions/setup-java@v1
         with:

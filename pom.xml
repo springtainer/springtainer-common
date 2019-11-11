@@ -105,14 +105,6 @@
       <version>1.0.8</version>
     </dependency>
 
-    <!-- TODO remove me -->
-    <dependency>
-      <groupId>com.avides.springboot.testcontainer</groupId>
-      <artifactId>springboot-testcontainer-mysql</artifactId>
-      <version>0.1.0-RC11</version>
-      <scope>test</scope>
-    </dependency>
-    
     <!-- Testing -->
     <dependency>
       <groupId>org.assertj</groupId>
