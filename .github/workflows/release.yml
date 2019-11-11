@@ -36,6 +36,9 @@ jobs:
           key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-maven-
 
+      - name: compile
+        run: mvn clean compile test-compile
+
       - name: sonar-analyse
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
