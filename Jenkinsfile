@@ -5,7 +5,7 @@ pipeline
     environment
     {
         deploymentBranch = "master"
-        mavenExecutable = "mvn-jdk8"
+        mavenExecutable = "mvn-jdk11"
     }
 
     triggers
