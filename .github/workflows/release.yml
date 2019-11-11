@@ -16,14 +16,14 @@ jobs:
 
       - name: setup-gpg
         env:
-          gpgPrivateKey: ${{ secrets.gpgPrivateKey }}
-        run: echo ${gpgPrivateKey} | base64 --decode | gpg --batch --import
+          GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+        run: echo ${GPG_PRIVATE_KEY} | base64 --decode | gpg --batch --import
 
       - name: setup-maven-settings
         uses: s4u/maven-settings-action@v1
         with:
-          servers: '[{"id": "ossrh", "username": "${ossrhUsername}", "password": "${ossrhPassword}"}, {"id": "github", "username": "x-access-token", "password": "${githubToken}"}]'
-          properties: '[{"gpg.executable": "gpg"}, {"gpg.passphrase": "${gpgPassphrase}"}]'
+          servers: '[{"id": "ossrh", "username": "${OSSRH_USERNAME}", "password": "${OSSRH_PASSWORD}"}, {"id": "github", "username": "x-access-token", "password": "${GITHUB_TOKEN}"}]'
+          properties: '[{"gpg.executable": "gpg"}, {"gpg.passphrase": "${GPG_PASSPHRASE}"}]'
           sonatypeSnapshots: true
 
       - name: checkout
@@ -50,8 +50,8 @@ jobs:
 
       - name: deploy
         env:
-          gpgPassphrase: ${{ secrets.gpgPassphrase }}
-          ossrhUsername: ${{ secrets.ossrhUsername }}
-          ossrhPassword: ${{ secrets.ossrhPassword }}
-          githubToken: ${{ secrets.GITHUB_TOKEN }}
+          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+          OSSRH_USERNAME: ${{ secrets.OSSRH_USERNAME }}
+          OSSRH_PASSWORD: ${{ secrets.OSSRH_PASSWORD }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: mvn clean deploy
