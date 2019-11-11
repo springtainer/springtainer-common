@@ -50,8 +50,6 @@ public abstract class AbstractEmbeddedContainer<P extends AbstractEmbeddedContai
         {
             Builder builder = DefaultDockerClientConfig.createDefaultConfigBuilder();
             Field declaredField = builder.getClass().getDeclaredField("dockerHost");
-            declaredField = builder.getClass().getDeclaredField("dockerHost");
-            declaredField = builder.getClass().getDeclaredField("dockerHost");
             declaredField.setAccessible(true);
             return ((URI) declaredField.get(builder)).getHost();
         }
