@@ -1,17 +1,16 @@
-springboot-testcontainers-common
-================================
+# springboot-testcontainers-common
 
 [![Maven Central](https://img.shields.io/maven-metadata/v/http/central.maven.org/maven2/com/avides/springboot/testcontainer/springboot-testcontainer-common/maven-metadata.xml.svg)](https://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22com.avides.springboot.testcontainer%22%20AND%20a%3A%22springboot-testcontainer-common%22)
-[![Codacy Badge](https://api.codacy.com/project/badge/Grade/f23e7fe358f44755b4b006178eb3dc8c)](https://www.codacy.com/app/avides-builds/springboot-testcontainer-common)
-[![Codacy Badge](https://api.codacy.com/project/badge/Coverage/f23e7fe358f44755b4b006178eb3dc8c)](https://www.codacy.com/app/avides-builds/springboot-testcontainer-common)
-[![Build Status](https://travis-ci.org/springboot-testcontainer/springboot-testcontainer-common.svg?branch=master)](https://travis-ci.org/springboot-testcontainer/springboot-testcontainer-common)
+[![Build](https://github.com/springboot-testcontainer/springboot-testcontainer-common/workflows/release/badge.svg)](https://github.com/springboot-testcontainers/springboot-testcontainers-common/actions)
+[![Nightly build](https://github.com/springboot-testcontainer/springboot-testcontainer-common/workflows/nightly/badge.svg)](https://github.com/springboot-testcontainers/springboot-testcontainers-common/actions)
+[![Sonarcloud Status](https://sonarcloud.io/api/project_badges/measure?project=springboot-testcontainer_springboot-testcontainer-common&metric=alert_status)](https://sonarcloud.io/dashboard?id=springboot-testcontainer_springboot-testcontainer-common)
 
 ### Dependency
 ```xml
 <dependency>
 	<groupId>com.avides.springboot.testcontainer</groupId>
 	<artifactId>springboot-testcontainer-common</artifactId>
-	<version>0.1.0-RC15</version>
+	<version>1.0.0-RC1</version>
 </dependency>
 ```
 
