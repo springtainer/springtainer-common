@@ -37,6 +37,11 @@ public class EmbeddedContainerCleanupAutoConfiguration
         return new EmbeddedContainerCleanup(properties);
     }
 
+    private static int dontDoThis()
+    {
+        return 1 / 0;
+    }
+
     @RequiredArgsConstructor
     public class EmbeddedContainerCleanup
     {
