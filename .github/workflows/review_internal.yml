@@ -39,12 +39,8 @@ jobs:
         run: |
           export GITHUB_PULL_REQUEST=$(cut -d / -f 3 <(echo ${GITHUB_REF}))
           mvn sonar:sonar \
-            -Dsonar.analysis.mode=preview \
             -Dsonar.host.url=http://localhost:8091/ \
-            -Dsonar.github.oauth=${GITHUB_TOKEN} \
-            -Dsonar.github.repository=${GITHUB_REPOSITORY} \
             -Dsonar.pullrequest.key=${GITHUB_PULL_REQUEST} \
-            -Dsonar.github.pullRequest=${GITHUB_PULL_REQUEST} \
             -Dsonar.java.binaries=./target/classes
 
       - name: pom-analyse
