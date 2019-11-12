@@ -44,6 +44,7 @@ jobs:
             -Dsonar.pullrequest.key=${GITHUB_PULL_REQUEST} \
             -Dsonar.alm.github.app.privateKey.secured=${GITHUB_TOKEN} \
             -Dsonar.alm.github.app.id=x-access-token \
+            -Dsonar.pullrequest.branch=${GITHUB_REF} \
             -Dsonar.pullrequest.github.repository=${GITHUB_REPOSITORY} \
             -Dsonar.java.binaries=./target/classes -X
 
