@@ -1,13 +1,12 @@
-name: review
+name: review_internal
 
 on:
-  push:
-    branches:
-      - master
+  pull_request:
+    types: [opened, synchronize]
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
 
     steps:
       - name: setup-java
@@ -39,13 +38,12 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           export GITHUB_PULL_REQUEST=$(cut -d / -f 3 <(echo ${GITHUB_REF}))
-          export SONAR_ORGANIZATION=$(echo ${GITHUB_REPOSITORY} | cut -d / -f 1)
           mvn sonar:sonar \
-            -Dsonar.host.url=https://sonarcloud.io/ \
-            -Dsonar.login=${{ secrets.SONAR_TOKEN }} \
-            -Dsonar.organization=${SONAR_ORGANIZATION} \
-            -Dsonar.projectKey=${GITHUB_REPOSITORY//\//_} \
-            -Dsonar.pullrequest.key=${GITHUB_PULL_REQUEST} \
+            -Dsonar.analysis.mode=preview \
+            -Dsonar.host.url=http://localhost:8091/ \
+            -Dsonar.github.oauth=${GITHUB_TOKEN} \
+            -Dsonar.github.repository=${GITHUB_REPOSITORY} \
+            -Dsonar.github.pullRequest=${GITHUB_PULL_REQUEST} \
             -Dsonar.java.binaries=./target/classes
 
       - name: pom-analyse
