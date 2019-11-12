@@ -38,14 +38,14 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           export GITHUB_PULL_REQUEST=$(cut -d / -f 3 <(echo ${GITHUB_REF}))
+          echo "sonar.pullrequest.provider=Github" > sonar.properties
+          echo "sonar.pullrequest.key=${GITHUB_PULL_REQUEST}" >> sonar.properties
+          echo "sonar.alm.github.app.privateKey.secured=${GITHUB_TOKEN}" >> sonar.properties
+          echo "sonar.alm.github.app.id=x-access-token" >> sonar.properties
+          echo "sonar.pullrequest.branch=${GITHUB_REF}" >> sonar.properties
+          echo "sonar.pullrequest.github.repository=${GITHUB_REPOSITORY}" >> sonar.properties
           mvn sonar:sonar \
             -Dsonar.host.url=http://localhost:8091/ \
-            -Dsonar.pullrequest.provider=Github \
-            -Dsonar.pullrequest.key=${GITHUB_PULL_REQUEST} \
-            -Dsonar.alm.github.app.privateKey.secured=${GITHUB_TOKEN} \
-            -Dsonar.alm.github.app.id=x-access-token \
-            -Dsonar.pullrequest.branch=${GITHUB_REF} \
-            -Dsonar.pullrequest.github.repository=${GITHUB_REPOSITORY} \
             -Dsonar.java.binaries=./target/classes -X
 
       - name: pom-analyse
