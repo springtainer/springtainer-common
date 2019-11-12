@@ -41,6 +41,8 @@ jobs:
           mvn sonar:sonar \
             -Dsonar.host.url=http://localhost:8091/ \
             -Dsonar.pullrequest.key=${GITHUB_PULL_REQUEST} \
+            -Dsonar.pullrequest.branch=${GITHUB_REF} \
+            -Dsonar.pullrequest.base=master \
             -Dsonar.java.binaries=./target/classes
 
       - name: pom-analyse
