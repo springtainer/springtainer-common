@@ -40,6 +40,7 @@ jobs:
           export GITHUB_PULL_REQUEST=$(cut -d / -f 3 <(echo ${GITHUB_REF}))
           mvn sonar:sonar \
             -Dsonar.host.url=http://localhost:8091/ \
+            -Dsonar.pullrequest.provider=Github \
             -Dsonar.pullrequest.key=${GITHUB_PULL_REQUEST} \
             -Dsonar.alm.github.app.privateKey.secured=${GITHUB_TOKEN} \
             -Dsonar.alm.github.app.id=x-access-token \
