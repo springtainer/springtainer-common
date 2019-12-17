@@ -1,8 +1,10 @@
-package com.avides.springboot.testcontainer.common;
+package com.avides.springboot.springtainer.common;
 
 import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
+
+import com.avides.springboot.springtainer.common.ContainerCommonProperties;
 
 public class ContainerCommonPropertiesTest
 {

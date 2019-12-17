@@ -1,4 +1,4 @@
-package com.avides.springboot.testcontainer.common.util;
+package com.avides.springboot.springtainer.common.util;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -6,6 +6,8 @@ import static org.junit.Assert.assertTrue;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+
+import com.avides.springboot.springtainer.common.util.OSUtils;
 
 public class OSUtilsTest
 {

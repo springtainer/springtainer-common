@@ -1,4 +1,4 @@
-package com.avides.springboot.testcontainer.common.container;
+package com.avides.springboot.springtainer.common.container;
 
 public class ContainerStartupFailedException extends Exception
 {

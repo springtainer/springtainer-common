@@ -1,7 +1,7 @@
-package com.avides.springboot.testcontainer.common.cleanup;
+package com.avides.springboot.springtainer.common.cleanup;
 
-import static com.avides.springboot.testcontainer.common.Labels.TESTCONTAINER_ISSUER;
-import static com.avides.springboot.testcontainer.common.Labels.TESTCONTAINER_STARTED;
+import static com.avides.springboot.springtainer.common.Labels.SPRINGTAINER_ISSUER;
+import static com.avides.springboot.springtainer.common.Labels.SPRINGTAINER_STARTED;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -15,7 +15,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import com.avides.springboot.testcontainer.common.util.IssuerUtil;
+import com.avides.springboot.springtainer.common.util.IssuerUtil;
 import com.github.dockerjava.api.DockerClient;
 import com.github.dockerjava.api.model.Container;
 import com.github.dockerjava.core.DockerClientBuilder;
@@ -56,9 +56,9 @@ public class EmbeddedContainerCleanupAutoConfiguration
             {
                 for (Container container : dockerClient.listContainersCmd().exec())
                 {
-                    if (container.getLabels().containsKey(TESTCONTAINER_STARTED))
+                    if (container.getLabels().containsKey(SPRINGTAINER_STARTED))
                     {
-                        long millis = Long.parseLong(container.getLabels().get(TESTCONTAINER_STARTED));
+                        long millis = Long.parseLong(container.getLabels().get(SPRINGTAINER_STARTED));
                         LocalDateTime started = LocalDateTime.ofInstant(Instant.ofEpochMilli(millis), ZoneId.systemDefault());
                         LocalDateTime staleSince = LocalDateTime.now().minusMinutes(properties.getAfterMinutes());
 
@@ -66,7 +66,7 @@ public class EmbeddedContainerCleanupAutoConfiguration
                         {
                             staleContainers.add(container);
                         }
-                        else if (currentIssuer.equals(container.getLabels().get(TESTCONTAINER_ISSUER)))
+                        else if (currentIssuer.equals(container.getLabels().get(SPRINGTAINER_ISSUER)))
                         {
                             issuerContainers.add(container);
                         }

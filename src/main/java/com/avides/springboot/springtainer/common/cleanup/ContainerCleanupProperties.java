@@ -1,4 +1,4 @@
-package com.avides.springboot.testcontainer.common.cleanup;
+package com.avides.springboot.springtainer.common.cleanup;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 

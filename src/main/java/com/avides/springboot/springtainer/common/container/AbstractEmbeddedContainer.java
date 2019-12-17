@@ -1,4 +1,4 @@
-package com.avides.springboot.testcontainer.common.container;
+package com.avides.springboot.springtainer.common.container;
 
 import java.lang.reflect.Field;
 import java.net.URI;
@@ -7,7 +7,7 @@ import java.net.URISyntaxException;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.core.env.ConfigurableEnvironment;
 
-import com.avides.springboot.testcontainer.common.util.OSUtils;
+import com.avides.springboot.springtainer.common.util.OSUtils;
 import com.github.dockerjava.api.DockerClient;
 import com.github.dockerjava.api.command.InspectContainerResponse;
 import com.github.dockerjava.api.model.ExposedPort;
