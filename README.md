@@ -12,7 +12,7 @@
 <dependency>
 	<groupId>com.avides.springboot.testcontainer</groupId>
 	<artifactId>springtainer-common</artifactId>
-	<version>1.0.0-RC1</version>
+	<version>1.0.0</version>
 </dependency>
 ```
 
