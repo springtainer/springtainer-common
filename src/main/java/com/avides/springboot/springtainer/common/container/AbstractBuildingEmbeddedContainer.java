@@ -156,7 +156,7 @@ public abstract class AbstractBuildingEmbeddedContainer<P extends AbstractEmbedd
      */
     protected void adjustCreateCommand(CreateContainerCmd createContainerCmd)
     {
-
+        // nothing
     }
 
     protected void pullImage(DockerClient dockerClient) throws InterruptedException
