@@ -7,8 +7,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.avides.springboot.springtainer.common.util.OSUtils;
-
 public class OSUtilsTest
 {
     private String osName;
