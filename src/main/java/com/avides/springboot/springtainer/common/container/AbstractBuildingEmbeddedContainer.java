@@ -1,4 +1,4 @@
-package com.avides.springboot.testcontainer.common.container;
+package com.avides.springboot.springtainer.common.container;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -15,8 +15,8 @@ import org.springframework.context.event.ContextStoppedEvent;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MapPropertySource;
 
-import com.avides.springboot.testcontainer.common.Labels;
-import com.avides.springboot.testcontainer.common.util.IssuerUtil;
+import com.avides.springboot.springtainer.common.Labels;
+import com.avides.springboot.springtainer.common.util.IssuerUtil;
 import com.github.dockerjava.api.DockerClient;
 import com.github.dockerjava.api.command.CreateContainerCmd;
 import com.github.dockerjava.api.exception.InternalServerErrorException;
@@ -95,20 +95,20 @@ public abstract class AbstractBuildingEmbeddedContainer<P extends AbstractEmbedd
         return new ArrayList<>();
     }
 
-    private Map<String, String> getTestcontainerLabels()
+    private Map<String, String> getSpringtainerLabels()
     {
         Map<String, String> labels = new HashMap<>();
-        labels.put(Labels.TESTCONTAINER_SERVICE, service);
-        labels.put(Labels.TESTCONTAINER_IMAGE, properties.getDockerImage());
-        labels.put(Labels.TESTCONTAINER_STARTED, String.valueOf(System.currentTimeMillis()));
-        labels.put(Labels.TESTCONTAINER_ISSUER, IssuerUtil.getIssuer());
+        labels.put(Labels.SPRINGTAINER_SERVICE, service);
+        labels.put(Labels.SPRINGTAINER_IMAGE, properties.getDockerImage());
+        labels.put(Labels.SPRINGTAINER_STARTED, String.valueOf(System.currentTimeMillis()));
+        labels.put(Labels.SPRINGTAINER_ISSUER, IssuerUtil.getIssuer());
         return labels;
     }
 
     private Map<String, String> getAllLabels()
     {
         Map<String, String> labels = getLabels();
-        labels.putAll(getTestcontainerLabels());
+        labels.putAll(getSpringtainerLabels());
         return labels;
     }
 
@@ -156,7 +156,7 @@ public abstract class AbstractBuildingEmbeddedContainer<P extends AbstractEmbedd
      */
     protected void adjustCreateCommand(CreateContainerCmd createContainerCmd)
     {
-
+        // nothing
     }
 
     protected void pullImage(DockerClient dockerClient) throws InterruptedException

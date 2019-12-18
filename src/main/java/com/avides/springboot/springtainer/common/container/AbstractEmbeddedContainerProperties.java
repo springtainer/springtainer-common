@@ -1,4 +1,4 @@
-package com.avides.springboot.testcontainer.common.container;
+package com.avides.springboot.springtainer.common.container;
 
 import lombok.Getter;
 import lombok.Setter;

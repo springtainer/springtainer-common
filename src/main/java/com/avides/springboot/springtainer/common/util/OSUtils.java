@@ -1,4 +1,4 @@
-package com.avides.springboot.testcontainer.common.util;
+package com.avides.springboot.springtainer.common.util;
 
 import lombok.experimental.UtilityClass;
 

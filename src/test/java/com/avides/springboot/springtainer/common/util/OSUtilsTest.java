@@ -1,4 +1,4 @@
-package com.avides.springboot.testcontainer.common.util;
+package com.avides.springboot.springtainer.common.util;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;

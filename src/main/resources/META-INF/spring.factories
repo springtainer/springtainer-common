@@ -1,2 +1,2 @@
 org.springframework.cloud.bootstrap.BootstrapConfiguration=\
-com.avides.springboot.testcontainer.common.cleanup.EmbeddedContainerCleanupAutoConfiguration
+com.avides.springboot.springtainer.common.cleanup.EmbeddedContainerCleanupAutoConfiguration

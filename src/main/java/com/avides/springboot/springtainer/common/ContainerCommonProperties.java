@@ -1,4 +1,4 @@
-package com.avides.springboot.testcontainer.common;
+package com.avides.springboot.springtainer.common;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 

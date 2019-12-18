@@ -1,9 +1,11 @@
-package com.avides.springboot.testcontainer.common.cleanup;
+package com.avides.springboot.springtainer.common.cleanup;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
+
+import com.avides.springboot.springtainer.common.cleanup.ContainerCleanupProperties;
 
 public class ContainerCleanupPropertiesTest
 {
