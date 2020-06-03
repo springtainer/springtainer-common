@@ -7,10 +7,10 @@ on:
 
 jobs:
   release:
+    runs-on: ubuntu-latest
     env:
       OSSRH_USERNAME: ${{ secrets.OS_OSSRH_USERNAME }}
       OSSRH_PASSWORD: ${{ secrets.OS_OSSRH_PASSWORD }}
-    runs-on: ubuntu-latest
 
     steps:
       - name: setup-java

@@ -16,11 +16,6 @@ jobs:
 
       - name: checkout
         uses: actions/checkout@v2
-        with:
-          fetch-depth: ''
-
-      - name: post-checkout
-        run: git fetch --prune --unshallow
 
       - name: project-version-check
         uses: avides/actions-project-version-check@v1
