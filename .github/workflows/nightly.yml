@@ -35,7 +35,7 @@ jobs:
 
       - name: sonar-analyse
         env:
-          SONAR_HOST: ${{ secrets.OS_SONAR_HOST }}
+          SONAR_HOST: ${{ secrets.OS_SONAR_HOST_URL }}
           SONAR_TOKEN: ${{ secrets.OS_SONAR_TOKEN }}
         run: |
           export SONAR_ORGANIZATION=$(echo ${GITHUB_REPOSITORY} | cut -d / -f 1)
