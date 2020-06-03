@@ -24,7 +24,7 @@ jobs:
       - name: setup-gpg
         env:
           GPG_PRIVATE_KEY: ${{ secrets.OS_GPG_PRIVATE_KEY }}
-        run: echo ${GPG_PRIVATE_KEY} | gpg --batch --import
+        run: cat <(echo -e "${GPG_PRIVATE_KEY}") | gpg --batch --import
 
       - name: checkout
         uses: actions/checkout@v2
