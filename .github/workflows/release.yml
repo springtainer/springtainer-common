@@ -43,7 +43,7 @@ jobs:
       - name: deploy
         env:
           GPG_PASSPHRASE: ${{ secrets.OS_GPG_PASSPHRASE }}
-        run: mvn deploy -Dgpg.passphrase=${GPG_PASSPHRASE}
+        run: mvn deploy -Dgpg.executable=gpg -Dgpg.passphrase=${GPG_PASSPHRASE}
 
       - name: sonar-analyse
         env:
