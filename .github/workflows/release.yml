@@ -9,8 +9,6 @@ jobs:
   release:
     runs-on: ubuntu-latest
     env:
-      OSSRH_USERNAME: ${{ secrets.OS_OSSRH_USERNAME }}
-      OSSRH_PASSWORD: ${{ secrets.OS_OSSRH_PASSWORD }}
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     steps:
@@ -42,6 +40,8 @@ jobs:
 
       - name: deploy
         env:
+          OSSRH_USERNAME: ${{ secrets.OS_OSSRH_USERNAME }}
+          OSSRH_PASSWORD: ${{ secrets.OS_OSSRH_PASSWORD }}
           GPG_PASSPHRASE: ${{ secrets.OS_GPG_PASSPHRASE }}
         run: mvn deploy -Dgpg.executable=gpg -Dgpg.passphrase=${GPG_PASSPHRASE}
 
