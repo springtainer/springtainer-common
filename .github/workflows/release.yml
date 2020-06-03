@@ -11,6 +11,7 @@ jobs:
     env:
       OSSRH_USERNAME: ${{ secrets.OS_OSSRH_USERNAME }}
       OSSRH_PASSWORD: ${{ secrets.OS_OSSRH_PASSWORD }}
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     steps:
       - name: setup-java
@@ -20,6 +21,9 @@ jobs:
           server-id: ossrh
           server-username: OSSRH_USERNAME
           server-password: OSSRH_PASSWORD
+
+      - name: setup-github-release
+        run: sed -i -e 's/<\/servers>/<server><id>github<\/id><username>x-access-token<\/username><password>${GITHUB_TOKEN}<\/password><\/server><\/servers>/g' /home/runner/.m2/settings.xml
 
       - name: setup-gpg
         env:
