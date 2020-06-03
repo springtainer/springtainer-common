@@ -32,6 +32,13 @@
     <developerConnection>scm:git:https://github.com/springtainer/springtainer-common.git</developerConnection>
   </scm>
 
+  <distributionManagement>
+    <repository>
+      <id>ossrh</id>
+      <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+    </repository>
+  </distributionManagement>
+
   <properties>
     <!-- System -->
     <timestamp>${maven.build.timestamp}</timestamp>
