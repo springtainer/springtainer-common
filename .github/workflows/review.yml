@@ -47,7 +47,7 @@ jobs:
 
       - name: sonar-analyse
         env:
-          SONAR_HOST: ${{ secrets.OS_SONAR_HOST }}
+          SONAR_HOST: ${{ secrets.OS_SONAR_HOST_URL }}
           SONAR_TOKEN: ${{ secrets.OS_SONAR_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
