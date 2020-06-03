@@ -3,7 +3,7 @@ name: release
 on:
   push:
     branches:
-      - master
+      - LIBS-721
 
 jobs:
   release:
@@ -43,7 +43,7 @@ jobs:
           OSSRH_USERNAME: ${{ secrets.OS_OSSRH_USERNAME }}
           OSSRH_PASSWORD: ${{ secrets.OS_OSSRH_PASSWORD }}
           GPG_PASSPHRASE: ${{ secrets.OS_GPG_PASSPHRASE }}
-        run: mvn deploy -Dgpg.executable=gpg -Dgpg.passphrase=${GPG_PASSPHRASE}
+        run: mvn deploy -Dmaven.wagon.http.pool=false -Dgpg.executable=gpg -Dgpg.passphrase=${GPG_PASSPHRASE}
 
       - name: sonar-analyse
         env:
