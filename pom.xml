@@ -65,6 +65,16 @@
     <!-- Spring -->
     <spring.version>5.2.6.RELEASE</spring.version>
     <spring-boot.version>2.3.0.RELEASE</spring-boot.version>
+    <spring-cloud-context.version>2.2.0.RELEASE</spring-cloud-context.version>
+    <!-- Other -->
+    <docker-java.version>3.2.1</docker-java.version>
+    <activation.version>1.1.1</activation.version>
+    <lombok.version>1.18.12</lombok.version>
+    <slf4j-api.version>1.7.25</slf4j-api.version>
+    <duct-tape.version>1.0.8</duct-tape.version>
+    <!-- Testing -->
+    <assertj-core.version>3.16.1</assertj-core.version>
+    <logback-classic.version>1.2.3</logback-classic.version>
   </properties>
 
   <dependencies>
@@ -72,12 +82,12 @@
     <dependency>
       <groupId>com.github.docker-java</groupId>
       <artifactId>docker-java</artifactId>
-      <version>3.2.1</version>
+      <version>${docker-java.version}</version>
     </dependency>
     <dependency>
       <groupId>javax.activation</groupId>
       <artifactId>activation</artifactId>
-      <version>1.1.1</version>
+      <version>${activation.version}</version>
     </dependency>
 
     <!-- Spring -->
@@ -90,33 +100,33 @@
     <dependency>
       <groupId>org.springframework.cloud</groupId>
       <artifactId>spring-cloud-context</artifactId>
-      <version>2.2.0.RELEASE</version>
+      <version>${spring-cloud-context.version}</version>
     </dependency>
 
     <!-- Common -->
     <dependency>
       <groupId>org.projectlombok</groupId>
       <artifactId>lombok</artifactId>
-      <version>1.18.12</version>
+      <version>${lombok.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
-      <version>1.7.25</version>
+      <version>${slf4j-api.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.rnorth.duct-tape</groupId>
       <artifactId>duct-tape</artifactId>
-      <version>1.0.8</version>
+      <version>${duct-tape.version}</version>
     </dependency>
 
     <!-- Testing -->
     <dependency>
       <groupId>org.assertj</groupId>
       <artifactId>assertj-core</artifactId>
-      <version>3.16.1</version>
+      <version>${assertj-core.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -159,7 +169,7 @@
     <dependency>
       <groupId>ch.qos.logback</groupId>
       <artifactId>logback-classic</artifactId>
-      <version>1.2.3</version>
+      <version>${logback-classic.version}</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
