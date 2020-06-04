@@ -1,6 +1,6 @@
 # springtainer-common
 
-[![Maven Central](https://img.shields.io/maven-metadata/v/http/central.maven.org/maven2/com/avides/springboot/springtainer/springtainer-common/maven-metadata.xml.svg)](https://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22com.avides.springboot.springtainer%22%20AND%20a%3A%22springtainer-common%22)
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.avides.springboot.springtainer/springtainer-common/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.avides.springboot.springtainer/springtainer-common)
 [![Build](https://github.com/springtainer/springtainer-common/workflows/release/badge.svg)](https://github.com/springtainer/springtainer-common/actions)
 [![Nightly build](https://github.com/springtainer/springtainer-common/workflows/nightly/badge.svg)](https://github.com/springtainer/springtainer-common/actions)
 [![Coverage report](https://sonarcloud.io/api/project_badges/measure?project=springtainer_springtainer-common&metric=coverage)](https://sonarcloud.io/dashboard?id=springtainer_springtainer-common)
@@ -12,7 +12,7 @@
 <dependency>
 	<groupId>com.avides.springboot.springtainer</groupId>
 	<artifactId>springtainer-common</artifactId>
-	<version>1.0.0</version>
+	<version>1.1.1</version>
 </dependency>
 ```
 
