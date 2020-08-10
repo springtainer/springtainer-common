@@ -35,7 +35,7 @@ public abstract class AbstractEmbeddedContainer<P extends AbstractEmbeddedContai
 
         if (OSUtils.isMac())
         {
-            return "localhost";
+            return environment.getProperty("embedded.container.mac.localhost.host", "127.0.0.1");
         }
 
         String containerNetwork = environment.getProperty("embedded.container.container-network", "bridge");

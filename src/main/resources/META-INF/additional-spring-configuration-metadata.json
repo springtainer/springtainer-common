@@ -24,6 +24,12 @@
 			"description": "Max allowed concurrent containers per issuer",
 			"type": "java.lang.Integer",
 			"defaultValue": "10"
-		}
+		},
+		{
+      "name": "embedded.container.mac.localhost.host",
+      "description": "Default host used for mac-machines",
+      "type": "java.lang.String",
+      "defaultValue": "127.0.0.1"
+    }
 	]
 }
