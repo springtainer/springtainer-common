@@ -12,7 +12,7 @@
 <dependency>
 	<groupId>com.avides.springboot.springtainer</groupId>
 	<artifactId>springtainer-common</artifactId>
-	<version>1.1.2</version>
+	<version>1.2.0</version>
 </dependency>
 ```
 
@@ -22,3 +22,4 @@ Properties consumed (in `bootstrap.properties`):
 - `embedded.container.cleanup.enabled` (default is `true`)
 - `embedded.container.cleanup.after-minutes` (default is `10`)
 - `embedded.container.cleanup.max-concurrent-per-issuer` (default is `10`)
+- `embedded.container.mac.localhost.host` (default is `127.0.0.1`)
