@@ -3,7 +3,7 @@
 
   <groupId>com.avides.springboot.springtainer</groupId>
   <artifactId>springtainer-common</artifactId>
-  <version>1.2.0</version>
+  <version>1.3.0-SNAPSHOT</version>
 
   <name>springtainer-common</name>
   <description>Common utils for springtainer</description>
@@ -67,7 +67,7 @@
     <spring-boot.version>2.3.0.RELEASE</spring-boot.version>
     <spring-cloud-context.version>2.2.0.RELEASE</spring-cloud-context.version>
     <!-- Other -->
-    <docker-java.version>3.2.1</docker-java.version>
+    <docker-java.version>3.2.8</docker-java.version>
     <activation.version>1.1.1</activation.version>
     <lombok.version>1.18.12</lombok.version>
     <slf4j-api.version>1.7.25</slf4j-api.version>
@@ -83,6 +83,26 @@
       <groupId>com.github.docker-java</groupId>
       <artifactId>docker-java</artifactId>
       <version>${docker-java.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>com.kohlschutter.junixsocket</groupId>
+          <artifactId>junixsocket-common</artifactId> <!-- Apple Silicon not supported -->
+        </exclusion>
+        <exclusion>
+          <groupId>com.kohlschutter.junixsocket</groupId>
+          <artifactId>junixsocket-native-common</artifactId> <!-- Apple Silicon not supported -->
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>com.kohlschutter.junixsocket</groupId>
+      <artifactId>junixsocket-common</artifactId>
+      <version>2.3.3</version> <!-- Apple Silicon support -->
+    </dependency>
+    <dependency>
+      <groupId>com.kohlschutter.junixsocket</groupId>
+      <artifactId>junixsocket-native-common</artifactId>
+      <version>2.3.3</version> <!-- Apple Silicon support -->
     </dependency>
     <dependency>
       <groupId>javax.activation</groupId>
