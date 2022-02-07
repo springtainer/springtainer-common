@@ -3,7 +3,7 @@ name: release
 on:
   push:
     branches:
-      - master
+      - LIBS-1054
 
 jobs:
   release:
