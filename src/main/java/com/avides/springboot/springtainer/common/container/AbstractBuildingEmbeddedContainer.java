@@ -19,11 +19,11 @@ import com.avides.springboot.springtainer.common.Labels;
 import com.avides.springboot.springtainer.common.util.IssuerUtil;
 import com.github.dockerjava.api.DockerClient;
 import com.github.dockerjava.api.command.CreateContainerCmd;
+import com.github.dockerjava.api.command.PullImageResultCallback;
 import com.github.dockerjava.api.exception.InternalServerErrorException;
 import com.github.dockerjava.api.exception.NotFoundException;
 import com.github.dockerjava.api.model.HostConfig;
 import com.github.dockerjava.core.DockerClientBuilder;
-import com.github.dockerjava.core.command.PullImageResultCallback;
 
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -35,7 +35,7 @@ public abstract class AbstractBuildingEmbeddedContainer<P extends AbstractEmbedd
     protected String service;
 
     @SneakyThrows
-    public AbstractBuildingEmbeddedContainer(String service, ConfigurableEnvironment environment, P properties)
+    protected AbstractBuildingEmbeddedContainer(String service, ConfigurableEnvironment environment, P properties)
     {
         this.service = service;
         this.environment = environment;

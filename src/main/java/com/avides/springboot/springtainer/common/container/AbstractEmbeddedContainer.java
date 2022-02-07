@@ -1,6 +1,5 @@
 package com.avides.springboot.springtainer.common.container;
 
-import java.lang.reflect.Field;
 import java.net.URI;
 import java.net.URISyntaxException;
 
@@ -12,7 +11,6 @@ import com.github.dockerjava.api.DockerClient;
 import com.github.dockerjava.api.command.InspectContainerResponse;
 import com.github.dockerjava.api.model.ExposedPort;
 import com.github.dockerjava.core.DefaultDockerClientConfig;
-import com.github.dockerjava.core.DefaultDockerClientConfig.Builder;
 
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -42,18 +40,14 @@ public abstract class AbstractEmbeddedContainer<P extends AbstractEmbeddedContai
         return containerInfo.getNetworkSettings().getNetworks().get(containerNetwork).getIpAddress();
     }
 
-    // See https://github.com/docker-java/docker-java/issues/1167 for further explanations
     @SneakyThrows(URISyntaxException.class)
     private static String getDockerHost()
     {
         try
         {
-            Builder builder = DefaultDockerClientConfig.createDefaultConfigBuilder();
-            Field declaredField = builder.getClass().getDeclaredField("dockerHost");
-            declaredField.setAccessible(true);
-            return ((URI) declaredField.get(builder)).getHost();
+            return DefaultDockerClientConfig.createDefaultConfigBuilder().build().getDockerHost().getHost();
         }
-        catch (IllegalArgumentException | IllegalAccessException | NoSuchFieldException | SecurityException e)
+        catch (IllegalArgumentException | SecurityException e)
         {
             log.warn("Unable to resolve the dockerHost by the DefaultDockerClientConfig. Switching to env variables..", e);
             String dockerHostProperty = System.getProperty("DOCKER_HOST", System.getenv("DOCKER_HOST"));
