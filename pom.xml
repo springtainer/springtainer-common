@@ -97,10 +97,31 @@
       <version>${spring-boot.version}</version>
       <scope>provided</scope>
     </dependency>
+    <!-- We only need "spring-cloud-context", but without this starter the property
+        "spring.cloud.bootstrap.enabled" is set to false by default, so we would
+        need to set it to true manually. -->
     <dependency>
       <groupId>org.springframework.cloud</groupId>
       <artifactId>spring-cloud-starter-bootstrap</artifactId>
       <version>${spring-cloud-starter-bootstrap.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>org.springframework.boot</groupId>
+          <artifactId>spring-boot-starter</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.springframework.cloud</groupId>
+          <artifactId>spring-cloud-commons</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.springframework.security</groupId>
+          <artifactId>spring-security-rsa</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.projectlombok</groupId>
+          <artifactId>lombok</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
 
     <!-- Common -->

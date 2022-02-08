@@ -35,7 +35,8 @@ public abstract class AbstractBuildingEmbeddedContainer<P extends AbstractEmbedd
     protected String service;
 
     @SneakyThrows
-    protected AbstractBuildingEmbeddedContainer(String service, ConfigurableEnvironment environment, P properties)
+    // TODO: fix this sonar issue within next breaking change -> Constructors of an "abstract" class should not be declared "public"
+    public AbstractBuildingEmbeddedContainer(String service, ConfigurableEnvironment environment, P properties)
     {
         this.service = service;
         this.environment = environment;
