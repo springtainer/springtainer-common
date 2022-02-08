@@ -38,7 +38,7 @@ public class EmbeddedContainerCleanupAutoConfiguration
     }
 
     @RequiredArgsConstructor
-    public class EmbeddedContainerCleanup
+    public static class EmbeddedContainerCleanup
     {
         public EmbeddedContainerCleanup(ContainerCleanupProperties properties)
         {

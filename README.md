@@ -9,10 +9,11 @@
 
 ### Dependency
 ```xml
+
 <dependency>
-	<groupId>com.avides.springboot.springtainer</groupId>
-	<artifactId>springtainer-common</artifactId>
-	<version>1.2.0</version>
+  <groupId>com.avides.springboot.springtainer</groupId>
+  <artifactId>springtainer-common</artifactId>
+  <version>1.3.0</version>
 </dependency>
 ```
 
