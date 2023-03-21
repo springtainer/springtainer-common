@@ -1,13 +1,15 @@
 package com.avides.springboot.springtainer.common.util;
 
-import java.util.regex.Matcher;
+import static java.lang.System.getProperty;
+import static java.lang.System.setProperty;
+import static lombok.AccessLevel.PRIVATE;
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
+
 import java.util.regex.Pattern;
 
-import org.apache.commons.lang.StringUtils;
+import lombok.NoArgsConstructor;
 
-import lombok.experimental.UtilityClass;
-
-@UtilityClass
+@NoArgsConstructor(access = PRIVATE)
 public class IssuerUtil
 {
     private static final Pattern TARGET_PATTERN = Pattern.compile("(.*)(/|\\\\)(.*)(/|\\\\)target(/|\\\\)(.*)");
@@ -15,29 +17,29 @@ public class IssuerUtil
     static
     {
         // Transform env to property to simplify testing
-        String jobName = System.getenv("JOB_NAME");
+        var jobName = System.getenv("JOB_NAME");
 
-        if (StringUtils.isNotBlank(jobName))
+        if (isNotBlank(jobName))
         {
-            System.setProperty("JENKINS_JOB_NAME", jobName);
+            setProperty("JENKINS_JOB_NAME", jobName);
         }
     }
 
-    public String getIssuer()
+    public static String getIssuer()
     {
         // https://wiki.jenkins.io/display/JENKINS/Building+a+software+project#Buildingasoftwareproject-belowJenkinsSetEnvironmentVariables
-        String jobName = System.getProperty("JENKINS_JOB_NAME");
+        var jobName = getProperty("JENKINS_JOB_NAME");
 
-        if (StringUtils.isNotBlank(jobName))
+        if (isNotBlank(jobName))
         {
             return jobName;
         }
 
-        String javaCommand = System.getProperty("sun.java.command");
+        var javaCommand = getProperty("sun.java.command");
 
-        if (StringUtils.isNotBlank(javaCommand))
+        if (isNotBlank(javaCommand))
         {
-            Matcher matcher = TARGET_PATTERN.matcher(javaCommand.split(":")[0]);
+            var matcher = TARGET_PATTERN.matcher(javaCommand.split(":")[0]);
 
             if (matcher.find())
             {
@@ -45,11 +47,11 @@ public class IssuerUtil
             }
         }
 
-        String javaClassPath = System.getProperty("java.class.path");
+        var javaClassPath = getProperty("java.class.path");
 
-        if (StringUtils.isNotBlank(javaClassPath))
+        if (isNotBlank(javaClassPath))
         {
-            Matcher matcher = TARGET_PATTERN.matcher(javaClassPath.split(":")[0]);
+            var matcher = TARGET_PATTERN.matcher(javaClassPath.split(":")[0]);
 
             if (matcher.find())
             {
