@@ -1,12 +1,17 @@
 package com.avides.springboot.springtainer.common.container;
 
+import static com.avides.springboot.springtainer.common.util.OSUtils.isMac;
+import static java.lang.Boolean.TRUE;
+import static java.lang.Integer.parseInt;
+import static java.lang.System.getProperty;
+import static java.lang.System.getenv;
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
+
 import java.net.URI;
 import java.net.URISyntaxException;
 
-import org.apache.commons.lang.StringUtils;
 import org.springframework.core.env.ConfigurableEnvironment;
 
-import com.avides.springboot.springtainer.common.util.OSUtils;
 import com.github.dockerjava.api.DockerClient;
 import com.github.dockerjava.api.command.InspectContainerResponse;
 import com.github.dockerjava.api.model.ExposedPort;
@@ -26,17 +31,17 @@ public abstract class AbstractEmbeddedContainer<P extends AbstractEmbeddedContai
 
     protected String getContainerHost()
     {
-        if (StringUtils.isNotBlank(getDockerHost()))
+        if (isNotBlank(getDockerHost()))
         {
             return getDockerHost();
         }
 
-        if (OSUtils.isMac())
+        if (isMac())
         {
             return environment.getProperty("embedded.container.mac.localhost.host", "127.0.0.1");
         }
 
-        String containerNetwork = environment.getProperty("embedded.container.container-network", "bridge");
+        var containerNetwork = environment.getProperty("embedded.container.container-network", "bridge");
         return containerInfo.getNetworkSettings().getNetworks().get(containerNetwork).getIpAddress();
     }
 
@@ -50,19 +55,19 @@ public abstract class AbstractEmbeddedContainer<P extends AbstractEmbeddedContai
         catch (IllegalArgumentException | SecurityException e)
         {
             log.warn("Unable to resolve the dockerHost by the DefaultDockerClientConfig. Switching to env variables..", e);
-            String dockerHostProperty = System.getProperty("DOCKER_HOST", System.getenv("DOCKER_HOST"));
-            return StringUtils.isNotBlank(dockerHostProperty) ? new URI(dockerHostProperty).getHost() : null;
+            var dockerHostProperty = getProperty("DOCKER_HOST", getenv("DOCKER_HOST"));
+            return isNotBlank(dockerHostProperty) ? new URI(dockerHostProperty).getHost() : null;
         }
     }
 
     protected int getContainerPort(int exposed)
     {
-        if (StringUtils.isNotBlank(getDockerHost()))
+        if (isNotBlank(getDockerHost()))
         {
             return getMappedPort(exposed);
         }
 
-        if (OSUtils.isMac())
+        if (isMac())
         {
             return getMappedPort(exposed);
         }
@@ -72,11 +77,12 @@ public abstract class AbstractEmbeddedContainer<P extends AbstractEmbeddedContai
 
     private int getMappedPort(int exposed)
     {
-        return Integer.parseInt(containerInfo.getNetworkSettings().getPorts().getBindings().get(new ExposedPort(exposed))[0].getHostPortSpec());
+        return parseInt(containerInfo.getNetworkSettings().getPorts().getBindings().get(new ExposedPort(exposed))[0].getHostPortSpec());
     }
 
+    @SuppressWarnings("resource")
     protected void killContainer(DockerClient dockerClient)
     {
-        dockerClient.removeContainerCmd(containerInfo.getId()).withForce(Boolean.TRUE).withRemoveVolumes(Boolean.TRUE).exec();
+        dockerClient.removeContainerCmd(containerInfo.getId()).withForce(TRUE).withRemoveVolumes(TRUE).exec();
     }
 }

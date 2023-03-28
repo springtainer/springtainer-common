@@ -1,17 +1,20 @@
 package com.avides.springboot.springtainer.common.util;
 
-import lombok.experimental.UtilityClass;
+import static java.lang.System.getProperty;
+import static lombok.AccessLevel.PRIVATE;
 
-@UtilityClass
+import lombok.NoArgsConstructor;
+
+@NoArgsConstructor(access = PRIVATE)
 public class OSUtils
 {
-    public boolean isMac()
+    public static boolean isMac()
     {
-        return System.getProperty("os.name").toLowerCase().contains("mac");
+        return getProperty("os.name").toLowerCase().contains("mac");
     }
 
-    public boolean isLinux()
+    public static boolean isLinux()
     {
-        return System.getProperty("os.name").toLowerCase().contains("linux");
+        return getProperty("os.name").toLowerCase().contains("linux");
     }
 }
