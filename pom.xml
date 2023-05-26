@@ -64,7 +64,7 @@
     <nexus-staging-maven-plugin.version>1.6.8</nexus-staging-maven-plugin.version>
     <!-- Spring -->
     <spring.version>5.3.24</spring.version>
-    <spring-boot.version>2.6.14</spring-boot.version>
+    <spring-boot.version>2.6.15</spring-boot.version>
     <spring-cloud-starter-bootstrap.version>3.1.6</spring-cloud-starter-bootstrap.version>
     <!-- Other -->
     <docker-java.version>3.3.0</docker-java.version>
