@@ -1,11 +1,11 @@
 package com.avides.springboot.springtainer.common.util;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 public class IssuerUtilTest
 {
@@ -13,7 +13,7 @@ public class IssuerUtilTest
 
     private static String javaClassPath;
 
-    @BeforeClass
+    @BeforeAll
     public static void beforeClass()
     {
         // Do not remove this line!
@@ -24,13 +24,13 @@ public class IssuerUtilTest
         javaClassPath = System.getProperty("java.class.path");
     }
 
-    @After
+    @AfterEach
     public void after()
     {
         System.setProperty("JENKINS_JOB_NAME", "");
     }
 
-    @AfterClass
+    @AfterAll
     public static void afterClass()
     {
         System.setProperty("JENKINS_JOB_NAME", "");
