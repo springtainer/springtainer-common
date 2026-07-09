@@ -16,6 +16,7 @@ import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MapPropertySource;
 
 import com.avides.springboot.springtainer.common.Labels;
+import com.avides.springboot.springtainer.common.util.DockerClients;
 import com.avides.springboot.springtainer.common.util.IssuerUtil;
 import com.github.dockerjava.api.DockerClient;
 import com.github.dockerjava.api.command.CreateContainerCmd;
@@ -23,7 +24,6 @@ import com.github.dockerjava.api.command.PullImageResultCallback;
 import com.github.dockerjava.api.exception.InternalServerErrorException;
 import com.github.dockerjava.api.exception.NotFoundException;
 import com.github.dockerjava.api.model.HostConfig;
-import com.github.dockerjava.core.DockerClientBuilder;
 
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -44,7 +44,7 @@ public abstract class AbstractBuildingEmbeddedContainer<P extends AbstractEmbedd
 
         log.info("Starting {}-container with {}", service, properties);
 
-        try (DockerClient dockerClient = DockerClientBuilder.getInstance().build())
+        try (DockerClient dockerClient = DockerClients.build())
         {
             createContainer(dockerClient);
 
@@ -67,7 +67,7 @@ public abstract class AbstractBuildingEmbeddedContainer<P extends AbstractEmbedd
         }
         catch (ContainerStartupFailedException e)
         {
-            killContainer(DockerClientBuilder.getInstance().build());
+            killContainer(DockerClients.build());
             log.error("Failed to start {}-container", service, e);
         }
     }
@@ -208,7 +208,7 @@ public abstract class AbstractBuildingEmbeddedContainer<P extends AbstractEmbedd
     {
         if (event instanceof ContextStoppedEvent || event instanceof ContextClosedEvent)
         {
-            try (DockerClient dockerClient = DockerClientBuilder.getInstance().build())
+            try (DockerClient dockerClient = DockerClients.build())
             {
                 log.info("Stopping {}-container...", service);
                 killContainer(dockerClient);
