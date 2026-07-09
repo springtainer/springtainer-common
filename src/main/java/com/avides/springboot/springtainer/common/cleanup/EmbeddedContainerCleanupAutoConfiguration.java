@@ -37,8 +37,10 @@ import lombok.extern.slf4j.Slf4j;
 public class EmbeddedContainerCleanupAutoConfiguration
 {
     // Spring's test-context cache keeps many contexts (and thus many EmbeddedContainerCleanup beans, one per cached context) alive concurrently, so a
-    // per-bean scheduler would run the same check redundantly once per cached context. A single JVM-wide scheduler avoids that.
+    // per-bean scheduler/shutdown-hook would run redundantly once per cached context. A single JVM-wide instance of each avoids that.
     private static final AtomicBoolean SCHEDULER_STARTED = new AtomicBoolean();
+
+    private static final AtomicBoolean SHUTDOWN_HOOK_REGISTERED = new AtomicBoolean();
 
     @ConditionalOnMissingBean(EmbeddedContainerCleanup.class)
     @Bean
@@ -54,18 +56,14 @@ public class EmbeddedContainerCleanupAutoConfiguration
         {
             log.info("{} stale containers removed", Integer.valueOf(removeStaleContainers(properties)));
             startScheduledCheckIfNeeded(properties);
+            registerShutdownHookIfNeeded();
         }
 
         private static void startScheduledCheckIfNeeded(ContainerCleanupProperties properties)
         {
             if (properties.getCheckIntervalSeconds() > 0 && SCHEDULER_STARTED.compareAndSet(false, true))
             {
-                ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor(runnable ->
-                {
-                    Thread thread = new Thread(runnable, "springtainer-cleanup-scheduler");
-                    thread.setDaemon(true);
-                    return thread;
-                });
+                ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor(runnable -> newDaemonThread(runnable, "springtainer-cleanup-scheduler"));
 
                 long intervalSeconds = properties.getCheckIntervalSeconds();
                 scheduler.scheduleWithFixedDelay(() -> runScheduledCheck(properties), intervalSeconds, intervalSeconds, TimeUnit.SECONDS);
@@ -81,6 +79,56 @@ public class EmbeddedContainerCleanupAutoConfiguration
             catch (Exception e) // NOSONAR - a failed periodic check must never bring down the scheduler thread
             {
                 log.warn("Scheduled stale-container check failed", e);
+            }
+        }
+
+        /**
+         * Registers a plain JVM shutdown hook (independent of any {@link org.springframework.context.ApplicationContext}) that force-removes every remaining
+         * container for the current issuer once this JVM actually exits.
+         * <p>
+         * The "normal" cleanup path - {@code AbstractBuildingEmbeddedContainer} stopping its own container on {@code ContextClosedEvent}/{@code
+         * ContextStoppedEvent} - relies on Spring's test-context cache eventually closing every cached context. In practice that often never happens for a
+         * plain test run (no {@code @DirtiesContext}, well under the context cache's default eviction size), and each cached context's own {@code
+         * SpringApplication}-registered JVM shutdown hook is not reliably given enough time to run to completion once a build tool's forked JVM starts
+         * exiting many of them at once. Observed in practice: containers from several different cached contexts still running well after `mvn verify`
+         * finished and the forked JVM had already exited. This hook is a direct, Spring-independent guarantee that this JVM does not leave its own
+         * containers behind, regardless of how many contexts got cached or whether their individual shutdown hooks completed in time.
+         */
+        private static void registerShutdownHookIfNeeded()
+        {
+            if (SHUTDOWN_HOOK_REGISTERED.compareAndSet(false, true))
+            {
+                Runtime.getRuntime().addShutdownHook(newDaemonThread(EmbeddedContainerCleanup::removeAllContainersForCurrentIssuer, "springtainer-cleanup-shutdown-hook"));
+            }
+        }
+
+        private static Thread newDaemonThread(Runnable runnable, String name)
+        {
+            Thread thread = new Thread(runnable, name);
+            thread.setDaemon(true);
+            return thread;
+        }
+
+        private static void removeAllContainersForCurrentIssuer()
+        {
+            try
+            {
+                String currentIssuer = IssuerUtil.getIssuer();
+
+                try (DockerClient dockerClient = DockerClients.build())
+                {
+                    for (Container container : dockerClient.listContainersCmd().exec())
+                    {
+                        if (currentIssuer.equals(container.getLabels().get(SPRINGTAINER_ISSUER)))
+                        {
+                            removeContainer(dockerClient, container);
+                        }
+                    }
+                }
+            }
+            catch (Exception e) // NOSONAR - a failing shutdown hook must never prevent JVM shutdown from completing
+            {
+                log.warn("Failed to remove containers for the current issuer on JVM shutdown", e);
             }
         }
 

@@ -23,6 +23,7 @@ import com.github.dockerjava.api.command.CreateContainerCmd;
 import com.github.dockerjava.api.command.PullImageResultCallback;
 import com.github.dockerjava.api.exception.InternalServerErrorException;
 import com.github.dockerjava.api.exception.NotFoundException;
+import com.github.dockerjava.api.model.Container;
 import com.github.dockerjava.api.model.HostConfig;
 
 import lombok.SneakyThrows;
@@ -46,6 +47,7 @@ public abstract class AbstractBuildingEmbeddedContainer<P extends AbstractEmbedd
 
         try (DockerClient dockerClient = DockerClients.build())
         {
+            stopPreviousContainers(dockerClient);
             createContainer(dockerClient);
 
             log.info("Checking {}-container... (Timeout: {}s)", service, Integer.valueOf(properties.getStartupTimeout()));
@@ -134,6 +136,40 @@ public abstract class AbstractBuildingEmbeddedContainer<P extends AbstractEmbedd
         }
 
         return hostConfig;
+    }
+
+    /**
+     * Stops any still-running container for the same service and issuer before a new one is created.
+     * <p>
+     * Spring's test-context cache keeps a superseded context (and the container bean it owns) alive rather than closing it just because a new context with
+     * different configuration is needed for the next test class - it might get reused again later in the suite. Since tests run sequentially, not in
+     * parallel, the previous container is never needed again once a new one for the same service is being started, so it is stopped proactively here rather
+     * than relying on that context ever actually closing.
+     *
+     * @param dockerClient to look up and remove previous containers with
+     */
+    private void stopPreviousContainers(DockerClient dockerClient)
+    {
+        String currentIssuer = IssuerUtil.getIssuer();
+
+        for (Container container : dockerClient.listContainersCmd().exec())
+        {
+            Map<String, String> labels = container.getLabels();
+
+            if (service.equals(labels.get(Labels.SPRINGTAINER_SERVICE)) && currentIssuer.equals(labels.get(Labels.SPRINGTAINER_ISSUER)))
+            {
+                log.info("Stopping previous {}-container ({}) before starting a new one", service, container.getId());
+
+                try
+                {
+                    dockerClient.removeContainerCmd(container.getId()).withForce(Boolean.TRUE).withRemoveVolumes(Boolean.TRUE).exec();
+                }
+                catch (NotFoundException e)
+                {
+                    // already gone (e.g. removed concurrently by the springtainer-common cleanup) - nothing to do
+                }
+            }
+        }
     }
 
     protected void createContainer(DockerClient dockerClient) throws InterruptedException
