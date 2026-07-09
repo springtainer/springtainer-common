@@ -14,5 +14,6 @@ public class ContainerCleanupPropertiesTest
         assertTrue(properties.isEnabled());
         assertEquals(10, properties.getAfterMinutes());
         assertEquals(10, properties.getMaxConcurrentPerIssuer());
+        assertEquals(60, properties.getCheckIntervalSeconds());
     }
 }
