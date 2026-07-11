@@ -68,7 +68,6 @@
     <spring-cloud-starter-bootstrap.version>4.3.3</spring-cloud-starter-bootstrap.version>
     <!-- Other -->
     <docker-java.version>3.7.1</docker-java.version>
-    <httpclient.version>4.5.14</httpclient.version>
     <httpclient5.version>5.5.2</httpclient5.version>
     <lombok.version>1.18.46</lombok.version>
     <slf4j-api.version>2.0.18</slf4j-api.version>
@@ -115,11 +114,6 @@
           <artifactId>docker-java-transport-jersey</artifactId>
         </exclusion>
       </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.httpcomponents</groupId>
-      <artifactId>httpclient</artifactId>
-      <version>${httpclient.version}</version>
     </dependency>
     <dependency>
       <!-- Provides ApacheDockerHttpClient, so docker-java can be given an explicit DockerHttpClient instead of silently falling back to its legacy
