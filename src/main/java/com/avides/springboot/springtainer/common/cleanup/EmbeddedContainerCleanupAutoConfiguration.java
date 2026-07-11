@@ -86,8 +86,8 @@ public class EmbeddedContainerCleanupAutoConfiguration
          * Registers a plain JVM shutdown hook (independent of any {@link org.springframework.context.ApplicationContext}) that force-removes every remaining
          * container for the current issuer once this JVM actually exits.
          * <p>
-         * The "normal" cleanup path - {@code AbstractBuildingEmbeddedContainer} stopping its own container on {@code ContextClosedEvent}/{@code
-         * ContextStoppedEvent} - relies on Spring's test-context cache eventually closing every cached context. In practice that often never happens for a
+         * The "normal" cleanup path - {@code AbstractBuildingEmbeddedContainer} stopping its own container as a low-phase {@link org.springframework.context.SmartLifecycle}
+         * bean during context close - relies on Spring's test-context cache eventually closing every cached context. In practice that often never happens for a
          * plain test run (no {@code @DirtiesContext}, well under the context cache's default eviction size), and each cached context's own {@code
          * SpringApplication}-registered JVM shutdown hook is not reliably given enough time to run to completion once a build tool's forked JVM starts
          * exiting many of them at once. Observed in practice: containers from several different cached contexts still running well after `mvn verify`

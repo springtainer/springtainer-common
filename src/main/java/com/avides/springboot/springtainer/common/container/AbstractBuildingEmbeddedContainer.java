@@ -8,10 +8,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.rnorth.ducttape.TimeoutException;
 import org.rnorth.ducttape.unreliables.Unreliables;
-import org.springframework.context.ApplicationListener;
-import org.springframework.context.event.ApplicationContextEvent;
-import org.springframework.context.event.ContextClosedEvent;
-import org.springframework.context.event.ContextStoppedEvent;
+import org.springframework.context.SmartLifecycle;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MapPropertySource;
 
@@ -30,9 +27,11 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public abstract class AbstractBuildingEmbeddedContainer<P extends AbstractEmbeddedContainerProperties> extends AbstractEmbeddedContainer<P>
-        implements ApplicationListener<ApplicationContextEvent>
+        implements SmartLifecycle
 {
     protected String service;
+
+    private volatile boolean running;
 
     @SneakyThrows
     // TODO: fix this sonar issue within next breaking change -> Constructors of an "abstract" class should not be declared "public"
@@ -53,6 +52,7 @@ public abstract class AbstractBuildingEmbeddedContainer<P extends AbstractEmbedd
             log.info("{}-container started (Duration: {}ms, Host: {})", service, Long.valueOf(startupDuration), getContainerHost());
 
             environment.getPropertySources().addFirst(new MapPropertySource("embedded" + service + "Properties", providedProperties()));
+            running = true;
         }
         catch (NotFoundException e)
         {
@@ -202,22 +202,51 @@ public abstract class AbstractBuildingEmbeddedContainer<P extends AbstractEmbedd
 
     protected abstract boolean isContainerReady(P properties);
 
+    @Override
+    public void start()
+    {
+        // nothing to do - the container is already started synchronously in the constructor
+    }
+
     @SneakyThrows
     @Override
-    public void onApplicationEvent(ApplicationContextEvent event)
+    public void stop()
     {
-        if (event instanceof ContextStoppedEvent || event instanceof ContextClosedEvent)
+        try (DockerClient dockerClient = DockerClients.build())
         {
-            try (DockerClient dockerClient = DockerClients.build())
-            {
-                log.info("Stopping {}-container...", service);
-                killContainer(dockerClient);
-                log.info("{}-container stopped", service);
-            }
-            catch (NotFoundException e)
-            {
-                log.info("{}-container not found.. ignored", service, e);
-            }
+            log.info("Stopping {}-container...", service);
+            killContainer(dockerClient);
+            log.info("{}-container stopped", service);
         }
+        catch (NotFoundException e)
+        {
+            log.info("{}-container not found.. ignored", service, e);
+        }
+        finally
+        {
+            running = false;
+        }
+    }
+
+    @Override
+    public boolean isRunning()
+    {
+        return running;
+    }
+
+    /**
+     * Guarantees that this container is stopped strictly after all default-phase {@link SmartLifecycle} beans (e.g. Spring AMQP's
+     * {@code CachingConnectionFactory} and its listener containers) have already stopped cleanly.
+     * <p>
+     * Killing the embedded container before those beans get a chance to gracefully disconnect can leave a listener container thread stuck
+     * reconnecting against an already-removed container, which then deadlocks the shutdown against a lock also needed by the connection
+     * factory's own stop() - hanging the JVM until it is force-killed.
+     *
+     * @return {@link Integer#MIN_VALUE} so this bean is always stopped last
+     */
+    @Override
+    public int getPhase()
+    {
+        return Integer.MIN_VALUE;
     }
 }
