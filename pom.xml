@@ -3,7 +3,7 @@
 
   <groupId>com.avides.springboot.springtainer</groupId>
   <artifactId>springtainer-common</artifactId>
-  <version>2.1.1</version>
+  <version>2.1.2</version>
 
   <name>springtainer-common</name>
   <description>Common utils for springtainer</description>
@@ -58,11 +58,11 @@
     <spring.version>6.2.19</spring.version>
     <spring-boot.version>3.5.16</spring-boot.version>
     <lombok.version>1.18.46</lombok.version>
-    <!-- Other -->
+    <slf4j-api.version>2.0.18</slf4j-api.version>
     <spring-cloud-starter-bootstrap.version>4.3.3</spring-cloud-starter-bootstrap.version>
+    <!-- Other -->
     <docker-java.version>3.7.1</docker-java.version>
     <httpclient5.version>5.5.2</httpclient5.version>
-    <slf4j-api.version>2.0.18</slf4j-api.version>
     <duct-tape.version>1.0.8</duct-tape.version>
     <!-- Testing -->
     <assertj-core.version>3.27.7</assertj-core.version>
@@ -74,7 +74,59 @@
   </properties>
 
   <dependencies>
-    <!-- Docker client -->
+    <!-- Common -->
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-autoconfigure</artifactId>
+      <version>${spring-boot.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-configuration-processor</artifactId>
+      <version>${spring-boot.version}</version>
+      <optional>true</optional>
+    </dependency>
+    <!-- We only need "spring-cloud-context", but without this starter the property
+        "spring.cloud.bootstrap.enabled" is set to false by default, so we would
+        need to set it to true manually. -->
+    <dependency>
+      <groupId>org.springframework.cloud</groupId>
+      <artifactId>spring-cloud-starter-bootstrap</artifactId>
+      <version>${spring-cloud-starter-bootstrap.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>org.springframework.boot</groupId>
+          <artifactId>spring-boot-starter</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.springframework.cloud</groupId>
+          <artifactId>spring-cloud-commons</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.springframework.security</groupId>
+          <artifactId>spring-security-rsa</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.projectlombok</groupId>
+          <artifactId>lombok</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.projectlombok</groupId>
+      <artifactId>lombok</artifactId>
+      <version>${lombok.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+      <version>${slf4j-api.version}</version>
+      <scope>provided</scope>
+    </dependency>
+  
+    <!-- Other -->
     <dependency>
       <groupId>com.github.docker-java</groupId>
       <artifactId>docker-java</artifactId>
@@ -116,65 +168,12 @@
       <artifactId>httpclient5</artifactId>
       <version>${httpclient5.version}</version>
     </dependency>
-
-    <!-- Spring -->
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-autoconfigure</artifactId>
-      <version>${spring-boot.version}</version>
-      <scope>provided</scope>
-    </dependency>
-    <!-- We only need "spring-cloud-context", but without this starter the property
-        "spring.cloud.bootstrap.enabled" is set to false by default, so we would
-        need to set it to true manually. -->
-    <dependency>
-      <groupId>org.springframework.cloud</groupId>
-      <artifactId>spring-cloud-starter-bootstrap</artifactId>
-      <version>${spring-cloud-starter-bootstrap.version}</version>
-      <exclusions>
-        <exclusion>
-          <groupId>org.springframework.boot</groupId>
-          <artifactId>spring-boot-starter</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.springframework.cloud</groupId>
-          <artifactId>spring-cloud-commons</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.springframework.security</groupId>
-          <artifactId>spring-security-rsa</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.projectlombok</groupId>
-          <artifactId>lombok</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-
-    <!-- Common -->
-    <dependency>
-      <groupId>org.projectlombok</groupId>
-      <artifactId>lombok</artifactId>
-      <version>${lombok.version}</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-api</artifactId>
-      <version>${slf4j-api.version}</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.rnorth.duct-tape</groupId>
-      <artifactId>duct-tape</artifactId>
-      <version>${duct-tape.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-configuration-processor</artifactId>
-      <version>${spring-boot.version}</version>
-      <optional>true</optional>
-    </dependency>
+<dependency>
+    <groupId>org.rnorth.duct-tape</groupId>
+    <artifactId>duct-tape</artifactId>
+    <version>1.0.8</version>
+    <scope>compile</scope>
+</dependency>
 
     <!-- Testing -->
     <dependency>
@@ -239,13 +238,6 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
-
-  <repositories>
-    <repository>
-      <id>sonatype-oss</id>
-      <url>https://oss.sonatype.org/content/repositories/releases</url>
-    </repository>
-  </repositories>
 
   <build>
     <plugins>
