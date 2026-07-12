@@ -3,7 +3,7 @@
 
   <groupId>com.avides.springboot.springtainer</groupId>
   <artifactId>springtainer-common</artifactId>
-  <version>2.0.8</version>
+  <version>2.0.9</version>
 
   <name>springtainer-common</name>
   <description>Common utils for springtainer</description>
@@ -105,11 +105,7 @@
           <artifactId>docker-java-transport-netty</artifactId>
         </exclusion>
         <exclusion>
-          <!-- Only used by the legacy Jersey fallback transport, which we never use since we always supply an explicit
-               ApacheDockerHttpClient (see DockerClients.build()) - excluding it drops the whole javax.ws.rs-api/jersey-client/
-               jersey-common/jersey-apache-connector/jersey-hk2 tree (and the javax.annotation-api companion dependency
-               it needed) from every consumer's classpath, so they no longer need to pin those versions themselves to
-               avoid clashing with Spring Boot's own (incompatible, jakarta-only) jersey-bom management. -->
+          <!-- Unused fallback transport (we always supply ApacheDockerHttpClient); its javax.ws.rs/jersey-* tree would otherwise clash with Spring Boot's jakarta-only jersey-bom -->
           <groupId>com.github.docker-java</groupId>
           <artifactId>docker-java-transport-jersey</artifactId>
         </exclusion>

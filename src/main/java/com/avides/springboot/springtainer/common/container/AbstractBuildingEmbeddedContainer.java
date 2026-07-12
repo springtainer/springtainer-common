@@ -206,17 +206,10 @@ public abstract class AbstractBuildingEmbeddedContainer<P extends AbstractEmbedd
     /**
      * Stops all of the context's other {@link org.springframework.context.SmartLifecycle} beans before killing this container.
      * <p>
-     * {@code ContextClosedEvent} is published before {@code DefaultLifecycleProcessor.onClose()} in {@code AbstractApplicationContext.doClose()} - so
-     * without this, the container could be removed while e.g. Spring AMQP's {@code CachingConnectionFactory} and its listener containers are still
-     * live. A listener thread caught mid-reconnect at that moment can then block on a TCP connect to the already-removed container while holding a
-     * lock the connection factory's own stop() also needs, deadlocking the shutdown until surefire's 30s force-kill.
-     * <p>
-     * Making this container itself a {@code SmartLifecycle}/{@link org.springframework.beans.factory.DisposableBean} bean (so Spring would order it
-     * relative to the others automatically) was tried first and rejected: it starts eagerly in the constructor rather than via a lifecycle callback,
-     * and Spring does not reliably track a bean that already reports {@code isRunning() == true}/is already a fully-initialized singleton the first
-     * time its lifecycle/disposable machinery discovers it - {@code isRunning()} was observed to be invoked, but the corresponding {@code stop()}/
-     * {@code destroy()} never was. Explicitly invoking the {@link LifecycleProcessor} ourselves sidesteps that entirely: Spring's own later call to
-     * {@code onClose()} (from its normal {@code doClose()} sequence) then finds every bean already stopped and is a safe no-op.
+     * {@code ContextClosedEvent} fires before {@code DefaultLifecycleProcessor.onClose()}, so without this the container could be removed while e.g.
+     * Spring AMQP's {@code CachingConnectionFactory} is still live, risking a shutdown deadlock. Do not make this container itself a
+     * {@code SmartLifecycle}/{@link org.springframework.beans.factory.DisposableBean} bean instead - it starts eagerly in the constructor, and Spring
+     * does not reliably invoke {@code stop()}/{@code destroy()} on a bean that already reports {@code isRunning() == true} on first discovery.
      */
     @SneakyThrows
     @Override
