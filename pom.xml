@@ -55,34 +55,40 @@
     <!-- Common -->
     <spring-boot.version>3.5.16</spring-boot.version>
     <spring-cloud-starter-bootstrap.version>4.3.3</spring-cloud-starter-bootstrap.version>
+    <!-- lombok must be pinned explicitly for the annotation-processor path; kept in sync with the Spring Boot BOM -->
     <lombok.version>1.18.46</lombok.version>
-    <slf4j-api.version>2.0.18</slf4j-api.version>
     <!-- Other -->
     <docker-java.version>3.7.1</docker-java.version>
-    <httpclient5.version>5.5.2</httpclient5.version>
     <duct-tape.version>1.0.8</duct-tape.version>
     <!-- Testing -->
-    <assertj-core.version>3.27.7</assertj-core.version>
-    <junit-jupiter-engine.version>5.12.2</junit-jupiter-engine.version>
     <jacoco.version>0.8.15</jacoco.version>
-    <spring-test.version>6.2.19</spring-test.version>
-    <logback-classic.version>1.5.34</logback-classic.version>
-    <mockito-core.version>5.17.0</mockito-core.version>
-    <byte-buddy.version>1.17.8</byte-buddy.version>
   </properties>
+
+  <dependencyManagement>
+    <dependencies>
+      <!-- Respect Spring Boot's dependency management: all BOM-managed versions
+           (spring-*, junit, mockito, byte-buddy, assertj, logback, slf4j, httpclient5, ...)
+           are inherited from here instead of being pinned individually. -->
+      <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-dependencies</artifactId>
+        <version>${spring-boot.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
 
   <dependencies>
     <!-- Common -->
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-autoconfigure</artifactId>
-      <version>${spring-boot.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-configuration-processor</artifactId>
-      <version>${spring-boot.version}</version>
       <optional>true</optional>
     </dependency>
     <!-- We only need "spring-cloud-context", but without this starter the property
@@ -114,13 +120,11 @@
     <dependency>
       <groupId>org.projectlombok</groupId>
       <artifactId>lombok</artifactId>
-      <version>${lombok.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
-      <version>${slf4j-api.version}</version>
       <scope>provided</scope>
     </dependency>
   
@@ -161,10 +165,9 @@
       <version>${docker-java.version}</version>
     </dependency>
     <dependency>
-      <!-- Pinned to the version already used elsewhere in this ecosystem, overriding docker-java-transport-httpclient5's own managed 5.5.1. -->
+      <!-- Version managed by the Spring Boot BOM (5.5.2), which also overrides docker-java-transport-httpclient5's transitive 5.5.1 across the tree. -->
       <groupId>org.apache.httpcomponents.client5</groupId>
       <artifactId>httpclient5</artifactId>
-      <version>${httpclient5.version}</version>
     </dependency>
     <dependency>
       <groupId>org.rnorth.duct-tape</groupId>
@@ -177,13 +180,11 @@
     <dependency>
       <groupId>org.assertj</groupId>
       <artifactId>assertj-core</artifactId>
-      <version>${assertj-core.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.junit.jupiter</groupId>
       <artifactId>junit-jupiter-engine</artifactId>
-      <version>${junit-jupiter-engine.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -196,19 +197,16 @@
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-test</artifactId>
-      <version>${spring-test.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-test</artifactId>
-      <version>${spring-boot.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>ch.qos.logback</groupId>
       <artifactId>logback-classic</artifactId>
-      <version>${logback-classic.version}</version>
       <scope>test</scope>
       <exclusions>
         <exclusion>
@@ -220,19 +218,16 @@
     <dependency>
       <groupId>org.mockito</groupId>
       <artifactId>mockito-core</artifactId>
-      <version>${mockito-core.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>net.bytebuddy</groupId>
       <artifactId>byte-buddy</artifactId>
-      <version>${byte-buddy.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>net.bytebuddy</groupId>
       <artifactId>byte-buddy-agent</artifactId>
-      <version>${byte-buddy.version}</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
