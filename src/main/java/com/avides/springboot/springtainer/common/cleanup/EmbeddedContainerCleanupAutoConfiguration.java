@@ -9,10 +9,12 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicLong;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -52,11 +54,41 @@ public class EmbeddedContainerCleanupAutoConfiguration
     @RequiredArgsConstructor
     public static class EmbeddedContainerCleanup
     {
+        // A large test suite creates many distinct Spring test-context configurations (each getting its own EmbeddedContainerCleanup bean), often within
+        // milliseconds of each other. Debouncing collapses those into a single Docker round-trip instead of re-scanning the whole host every time, while
+        // still re-checking every DEBOUNCE_MILLIS as the suite progresses - unlike a one-shot guard, this keeps maxConcurrentPerIssuer enforcement working
+        // throughout a long run as more containers accumulate over time, not just at the very first context's creation.
+        private static final long STALE_CHECK_DEBOUNCE_MILLIS = 5_000;
+
+        private static final AtomicLong LAST_STALE_CHECK_MILLIS = new AtomicLong();
+
         public EmbeddedContainerCleanup(ContainerCleanupProperties properties)
         {
-            log.info("{} stale containers removed", Integer.valueOf(removeStaleContainers(properties)));
+            log.info("{} stale containers removed", Integer.valueOf(removeStaleContainersIfDue(properties)));
             startScheduledCheckIfNeeded(properties);
             registerShutdownHookIfNeeded();
+        }
+
+        private static int removeStaleContainersIfDue(ContainerCleanupProperties properties)
+        {
+            long now = System.currentTimeMillis();
+            long last = LAST_STALE_CHECK_MILLIS.get();
+
+            if (now - last < STALE_CHECK_DEBOUNCE_MILLIS || !LAST_STALE_CHECK_MILLIS.compareAndSet(last, now))
+            {
+                return 0;
+            }
+
+            return removeStaleContainers(properties);
+        }
+
+        /**
+         * Resets the stale-check debounce so each test can independently exercise {@link #removeStaleContainers}, instead of only the first test in this
+         * class actually reaching it.
+         */
+        static void resetStaleCheckDebounceForTesting() // NOSONAR - package-private test hook, deliberately not part of the public API
+        {
+            LAST_STALE_CHECK_MILLIS.set(0);
         }
 
         private static void startScheduledCheckIfNeeded(ContainerCleanupProperties properties)
@@ -110,16 +142,11 @@ public class EmbeddedContainerCleanupAutoConfiguration
             try
             {
                 String currentIssuer = IssuerUtil.getIssuer();
+                DockerClient dockerClient = DockerClients.shared();
 
-                try (DockerClient dockerClient = DockerClients.build())
+                for (Container container : dockerClient.listContainersCmd().withLabelFilter(Map.of(SPRINGTAINER_ISSUER, currentIssuer)).exec())
                 {
-                    for (Container container : dockerClient.listContainersCmd().exec())
-                    {
-                        if (currentIssuer.equals(container.getLabels().get(SPRINGTAINER_ISSUER)))
-                        {
-                            removeContainer(dockerClient, container);
-                        }
-                    }
+                    removeContainer(dockerClient, container);
                 }
             }
             catch (Exception e) // NOSONAR - a failing shutdown hook must never prevent JVM shutdown from completing
@@ -135,47 +162,43 @@ public class EmbeddedContainerCleanupAutoConfiguration
             List<Container> issuerContainers = new ArrayList<>();
             List<Container> staleContainers = new ArrayList<>();
 
-            try (DockerClient dockerClient = DockerClients.build())
+            DockerClient dockerClient = DockerClients.shared();
+
+            for (Container container : dockerClient.listContainersCmd().withLabelFilter(List.of(SPRINGTAINER_STARTED)).exec())
             {
-                for (Container container : dockerClient.listContainersCmd().exec())
+                long millis = Long.parseLong(container.getLabels().get(SPRINGTAINER_STARTED));
+                LocalDateTime started = LocalDateTime.ofInstant(Instant.ofEpochMilli(millis), ZoneId.systemDefault());
+                LocalDateTime staleSince = LocalDateTime.now().minusMinutes(properties.getAfterMinutes());
+
+                if (started.isBefore(staleSince))
                 {
-                    if (container.getLabels().containsKey(SPRINGTAINER_STARTED))
-                    {
-                        long millis = Long.parseLong(container.getLabels().get(SPRINGTAINER_STARTED));
-                        LocalDateTime started = LocalDateTime.ofInstant(Instant.ofEpochMilli(millis), ZoneId.systemDefault());
-                        LocalDateTime staleSince = LocalDateTime.now().minusMinutes(properties.getAfterMinutes());
-
-                        if (started.isBefore(staleSince))
-                        {
-                            staleContainers.add(container);
-                        }
-                        else if (currentIssuer.equals(container.getLabels().get(SPRINGTAINER_ISSUER)))
-                        {
-                            issuerContainers.add(container);
-                        }
-                    }
+                    staleContainers.add(container);
                 }
-
-                int excess = issuerContainers.size() - properties.getMaxConcurrentPerIssuer();
-
-                if (excess > 0)
+                else if (currentIssuer.equals(container.getLabels().get(SPRINGTAINER_ISSUER)))
                 {
-                    // Only the oldest excess containers are removed, not all of them: a container started moments ago is very likely still in active use by
-                    // the test that just created it, whereas the oldest ones are the most likely to be sitting idle in Spring's context cache.
-                    List<Container> oldestExcessContainers = issuerContainers.stream()
-                            .sorted(comparingLong(container -> Long.parseLong(container.getLabels().get(SPRINGTAINER_STARTED))))
-                            .limit(excess)
-                            .toList();
-
-                    staleContainers.addAll(oldestExcessContainers);
-                    log.warn("Too many concurrent containers ({}) for issuer \"{}\", removing the {} oldest", Integer
-                            .valueOf(issuerContainers.size()), currentIssuer, Integer.valueOf(excess));
+                    issuerContainers.add(container);
                 }
+            }
 
-                for (Container staleContainer : staleContainers)
-                {
-                    removeContainer(dockerClient, staleContainer);
-                }
+            int excess = issuerContainers.size() - properties.getMaxConcurrentPerIssuer();
+
+            if (excess > 0)
+            {
+                // Only the oldest excess containers are removed, not all of them: a container started moments ago is very likely still in active use by
+                // the test that just created it, whereas the oldest ones are the most likely to be sitting idle in Spring's context cache.
+                List<Container> oldestExcessContainers = issuerContainers.stream()
+                        .sorted(comparingLong(container -> Long.parseLong(container.getLabels().get(SPRINGTAINER_STARTED))))
+                        .limit(excess)
+                        .toList();
+
+                staleContainers.addAll(oldestExcessContainers);
+                log.warn("Too many concurrent containers ({}) for issuer \"{}\", removing the {} oldest", Integer
+                        .valueOf(issuerContainers.size()), currentIssuer, Integer.valueOf(excess));
+            }
+
+            for (Container staleContainer : staleContainers)
+            {
+                removeContainer(dockerClient, staleContainer);
             }
 
             return staleContainers.size();

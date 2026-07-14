@@ -14,6 +14,7 @@ import static org.mockito.Mockito.when;
 import java.util.List;
 import java.util.Map;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 
@@ -46,17 +47,25 @@ public class EmbeddedContainerCleanupAutoConfigurationTest
         return properties;
     }
 
+    @BeforeEach
+    public void resetStaleCheckDebounce()
+    {
+        // production code debounces the stale-container check to avoid re-scanning the whole host for every distinct Spring test context created within a
+        // short window; without resetting it here, only the first test in this class would actually reach removeStaleContainers
+        EmbeddedContainerCleanup.resetStaleCheckDebounceForTesting();
+    }
+
     @Test
     public void testRemovesContainersOlderThanAfterMinutes()
     {
         DockerClient dockerClient = mock(DockerClient.class, RETURNS_DEEP_STUBS);
         Container fresh = containerWithLabels("fresh", labels(ofMinutes(1).toMillis(), IssuerUtil.getIssuer()));
         Container stale = containerWithLabels("stale", labels(ofMinutes(11).toMillis(), IssuerUtil.getIssuer()));
-        when(dockerClient.listContainersCmd().exec()).thenReturn(List.of(fresh, stale));
+        when(dockerClient.listContainersCmd().withLabelFilter(List.of(SPRINGTAINER_STARTED)).exec()).thenReturn(List.of(fresh, stale));
 
         try (MockedStatic<DockerClients> dockerClients = mockStatic(DockerClients.class))
         {
-            dockerClients.when(DockerClients::build).thenReturn(dockerClient);
+            dockerClients.when(DockerClients::shared).thenReturn(dockerClient);
 
             new EmbeddedContainerCleanup(propertiesWithoutSchedule());
 
@@ -74,14 +83,14 @@ public class EmbeddedContainerCleanupAutoConfigurationTest
         Container oldest = containerWithLabels("oldest", labels(30_000, issuer));
         Container middle = containerWithLabels("middle", labels(20_000, issuer));
         Container newest = containerWithLabels("newest", labels(10_000, issuer));
-        when(dockerClient.listContainersCmd().exec()).thenReturn(List.of(newest, oldest, middle));
+        when(dockerClient.listContainersCmd().withLabelFilter(List.of(SPRINGTAINER_STARTED)).exec()).thenReturn(List.of(newest, oldest, middle));
 
         ContainerCleanupProperties properties = propertiesWithoutSchedule();
         properties.setMaxConcurrentPerIssuer(2);
 
         try (MockedStatic<DockerClients> dockerClients = mockStatic(DockerClients.class))
         {
-            dockerClients.when(DockerClients::build).thenReturn(dockerClient);
+            dockerClients.when(DockerClients::shared).thenReturn(dockerClient);
 
             new EmbeddedContainerCleanup(properties);
 
@@ -101,14 +110,14 @@ public class EmbeddedContainerCleanupAutoConfigurationTest
         Container ownFirst = containerWithLabels("ownFirst", labels(20_000, IssuerUtil.getIssuer()));
         Container ownSecond = containerWithLabels("ownSecond", labels(10_000, IssuerUtil.getIssuer()));
         Container otherIssuer = containerWithLabels("otherIssuer", labels(30_000, "some-other-module"));
-        when(dockerClient.listContainersCmd().exec()).thenReturn(List.of(ownFirst, ownSecond, otherIssuer));
+        when(dockerClient.listContainersCmd().withLabelFilter(List.of(SPRINGTAINER_STARTED)).exec()).thenReturn(List.of(ownFirst, ownSecond, otherIssuer));
 
         ContainerCleanupProperties properties = propertiesWithoutSchedule();
         properties.setMaxConcurrentPerIssuer(2);
 
         try (MockedStatic<DockerClients> dockerClients = mockStatic(DockerClients.class))
         {
-            dockerClients.when(DockerClients::build).thenReturn(dockerClient);
+            dockerClients.when(DockerClients::shared).thenReturn(dockerClient);
 
             new EmbeddedContainerCleanup(properties);
 
@@ -121,13 +130,13 @@ public class EmbeddedContainerCleanupAutoConfigurationTest
     {
         DockerClient dockerClient = mock(DockerClient.class, RETURNS_DEEP_STUBS);
         Container stale = containerWithLabels("stale", labels(ofMinutes(11).toMillis(), IssuerUtil.getIssuer()));
-        when(dockerClient.listContainersCmd().exec()).thenReturn(List.of(stale));
+        when(dockerClient.listContainersCmd().withLabelFilter(List.of(SPRINGTAINER_STARTED)).exec()).thenReturn(List.of(stale));
         when(dockerClient.removeContainerCmd("stale").withForce(Boolean.TRUE).withRemoveVolumes(Boolean.TRUE).exec())
                 .thenThrow(new NotFoundException("no such container"));
 
         try (MockedStatic<DockerClients> dockerClients = mockStatic(DockerClients.class))
         {
-            dockerClients.when(DockerClients::build).thenReturn(dockerClient);
+            dockerClients.when(DockerClients::shared).thenReturn(dockerClient);
 
             // must not propagate: the container might already have been removed concurrently (e.g. by its own shutdown hook)
             new EmbeddedContainerCleanup(propertiesWithoutSchedule());

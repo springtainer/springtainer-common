@@ -19,6 +19,42 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = PRIVATE)
 public final class DockerClients
 {
+    private static volatile DockerClient shared;
+
+    /**
+     * Returns a {@link DockerClient} shared for the lifetime of this JVM, building it lazily on first use.
+     * <p>
+     * A fresh {@link ApacheDockerHttpClient} sets up its own connection pool on every {@link #build()} call, which is real, avoidable overhead when done
+     * once per container start/stop/cleanup-check rather than once per JVM - this is docker-java's own recommended usage pattern.
+     * <p>
+     * Deliberately never closed: several independent JVM shutdown hooks (Spring's test-context cache eviction, and this library's own cleanup shutdown
+     * hook) may still need to use this client while the JVM is exiting, and Java gives no ordering guarantee between shutdown hooks - closing it from a
+     * hook of its own could race with, and break, those other hooks. Leaving it open costs nothing: the JVM is exiting anyway and the OS reclaims the
+     * underlying sockets/threads regardless.
+     *
+     * @return the shared {@link DockerClient}
+     */
+    public static DockerClient shared()
+    {
+        DockerClient result = shared;
+
+        if (result == null)
+        {
+            synchronized (DockerClients.class)
+            {
+                result = shared;
+
+                if (result == null)
+                {
+                    result = build();
+                    shared = result;
+                }
+            }
+        }
+
+        return result;
+    }
+
     public static DockerClient build()
     {
         var config = DefaultDockerClientConfig.createDefaultConfigBuilder().build();

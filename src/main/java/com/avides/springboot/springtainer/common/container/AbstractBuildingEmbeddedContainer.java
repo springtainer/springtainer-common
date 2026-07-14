@@ -56,8 +56,10 @@ public abstract class AbstractBuildingEmbeddedContainer<P extends AbstractEmbedd
 
         log.info("Starting {}-container with {}", service, properties);
 
-        try (DockerClient dockerClient = DockerClients.build())
+        try
         {
+            DockerClient dockerClient = DockerClients.shared();
+
             createContainer(dockerClient);
 
             log.info("Checking {}-container... (Timeout: {}s)", service, Integer.valueOf(properties.getStartupTimeout()));
@@ -79,10 +81,7 @@ public abstract class AbstractBuildingEmbeddedContainer<P extends AbstractEmbedd
         }
         catch (ContainerStartupFailedException e)
         {
-            try (DockerClient dockerClient = DockerClients.build())
-            {
-                killContainer(dockerClient);
-            }
+            killContainer(DockerClients.shared());
             log.error("Failed to start {}-container", service, e);
         }
     }
@@ -237,10 +236,10 @@ public abstract class AbstractBuildingEmbeddedContainer<P extends AbstractEmbedd
                 applicationContext.getBean(LifecycleProcessor.class).onClose();
             }
 
-            try (DockerClient dockerClient = DockerClients.build())
+            try
             {
                 log.info("Stopping {}-container...", service);
-                killContainer(dockerClient);
+                killContainer(DockerClients.shared());
                 log.info("{}-container stopped", service);
             }
             catch (NotFoundException e)
