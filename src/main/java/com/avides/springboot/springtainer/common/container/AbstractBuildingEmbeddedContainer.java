@@ -1,13 +1,17 @@
 package com.avides.springboot.springtainer.common.container;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.WeakHashMap;
 import java.util.concurrent.TimeUnit;
 
 import org.rnorth.ducttape.TimeoutException;
 import org.rnorth.ducttape.unreliables.Unreliables;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.LifecycleProcessor;
 import org.springframework.context.event.ApplicationContextEvent;
@@ -33,6 +37,14 @@ import lombok.extern.slf4j.Slf4j;
 public abstract class AbstractBuildingEmbeddedContainer<P extends AbstractEmbeddedContainerProperties> extends AbstractEmbeddedContainer<P>
         implements ApplicationListener<ApplicationContextEvent>
 {
+    /**
+     * Guards {@link LifecycleProcessor#onClose()} so it runs at most once per {@link ApplicationContext}, even though every
+     * container bean in that context is itself a listener and receives the same {@code ContextClosedEvent}/{@code ContextStoppedEvent}.
+     * Without this, a context with N embedded containers would run N redundant full lifecycle-stop passes on shutdown. Weakly
+     * referenced so a closed context can still be garbage-collected.
+     */
+    private static final Set<ApplicationContext> LIFECYCLE_CLOSED_CONTEXTS = Collections.newSetFromMap(Collections.synchronizedMap(new WeakHashMap<>()));
+
     protected String service;
 
     @SneakyThrows
@@ -68,7 +80,10 @@ public abstract class AbstractBuildingEmbeddedContainer<P extends AbstractEmbedd
         }
         catch (ContainerStartupFailedException e)
         {
-            killContainer(DockerClients.build());
+            try (DockerClient dockerClient = DockerClients.build())
+            {
+                killContainer(dockerClient);
+            }
             log.error("Failed to start {}-container", service, e);
         }
     }
@@ -217,7 +232,11 @@ public abstract class AbstractBuildingEmbeddedContainer<P extends AbstractEmbedd
     {
         if (event instanceof ContextStoppedEvent || event instanceof ContextClosedEvent)
         {
-            event.getApplicationContext().getBean(LifecycleProcessor.class).onClose();
+            ApplicationContext applicationContext = event.getApplicationContext();
+            if (LIFECYCLE_CLOSED_CONTEXTS.add(applicationContext))
+            {
+                applicationContext.getBean(LifecycleProcessor.class).onClose();
+            }
 
             try (DockerClient dockerClient = DockerClients.build())
             {
