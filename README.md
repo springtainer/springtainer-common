@@ -11,7 +11,7 @@
 <dependency>
   <groupId>com.avides.springboot.springtainer</groupId>
   <artifactId>springtainer-common</artifactId>
-  <version>2.0.0-RC2</version>
+  <version>2.0.0-RC3</version>
 </dependency>
 ```
 
@@ -22,3 +22,15 @@ Properties consumed (in `bootstrap.properties`):
 - `embedded.container.cleanup.after-minutes` (default is `10`)
 - `embedded.container.cleanup.max-concurrent-per-issuer` (default is `10`)
 - `embedded.container.mac.localhost.host` (default is `127.0.0.1`)
+
+### Spring's test-context cache is bounded automatically
+
+`spring.test.context.cache.maxSize=1` ships as a classpath `spring.properties` resource inside this module's jar
+(`src/main/resources/spring.properties`), so it's picked up automatically by every consumer of any springtainer module -
+no configuration needed on your side. This bounds Spring's test-context cache so a no-longer-current context (and, via
+its `ContextClosedEvent` listener, the embedded container it owns) gets evicted and cleanly closed as soon as a
+differently-configured context needs the slot, instead of piling up unclosed until the whole JVM exits.
+
+This works the same way whether tests are launched via Maven Surefire/Failsafe or directly from an IDE's own test
+runner (e.g. Eclipse), since Spring resolves it from the classpath (`org.springframework.core.SpringProperties`) rather
+than from a JVM system property.
