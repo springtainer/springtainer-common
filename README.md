@@ -11,7 +11,7 @@
 <dependency>
   <groupId>com.avides.springboot.springtainer</groupId>
   <artifactId>springtainer-common</artifactId>
-  <version>2.0.0-RC4</version>
+  <version>2.0.0-RC5</version>
 </dependency>
 ```
 
