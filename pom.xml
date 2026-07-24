@@ -1,9 +1,9 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>com.avides.springboot.springtainer</groupId>
   <artifactId>springtainer-common</artifactId>
-  <version>1.4.0</version>
+  <version>2.0.0</version>
 
   <name>springtainer-common</name>
   <description>Common utils for springtainer</description>
@@ -36,92 +36,62 @@
     <developerConnection>scm:git:https://github.com/springtainer/springtainer-common.git</developerConnection>
   </scm>
 
-  <distributionManagement>
-    <repository>
-      <id>ossrh</id>
-      <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
-    </repository>
-  </distributionManagement>
-
   <properties>
-    <!-- System -->
-    <timestamp>${maven.build.timestamp}</timestamp>
+    <!-- Build -->
     <maven.build.timestamp.format>dd.MM.yyyy HH:mm</maven.build.timestamp.format>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <java.version>11</java.version>
-    <!-- Build -->
-    <maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
-    <maven-source-plugin.version>3.2.1</maven-source-plugin.version>
-    <maven-javadoc-plugin.version>3.3.0</maven-javadoc-plugin.version>
-    <maven-gpg-plugin.version>3.0.1</maven-gpg-plugin.version>
-    <maven-surefire-plugin.version>3.0.0-M5</maven-surefire-plugin.version>
-    <maven-failsafe-plugin.version>3.0.0-M5</maven-failsafe-plugin.version>
-    <maven-enforcer-plugin.version>3.0.0-M3</maven-enforcer-plugin.version>
-    <maven-release-plugin.version>3.0.0-M5</maven-release-plugin.version>
+    <java.version>21</java.version>
+    <maven-compiler-plugin.version>3.15.0</maven-compiler-plugin.version>
+    <maven-source-plugin.version>3.4.0</maven-source-plugin.version>
+    <maven-javadoc-plugin.version>3.12.0</maven-javadoc-plugin.version>
+    <maven-gpg-plugin.version>3.2.8</maven-gpg-plugin.version>
+    <maven-surefire-plugin.version>3.5.6</maven-surefire-plugin.version>
+    <maven-failsafe-plugin.version>3.5.6</maven-failsafe-plugin.version>
+    <maven-enforcer-plugin.version>3.6.3</maven-enforcer-plugin.version>
+    <maven-release-plugin.version>3.3.1</maven-release-plugin.version>
     <maven-scm-provider-gitexe.version>1.11.3</maven-scm-provider-gitexe.version>
-    <exists-maven-plugin.version>0.6.0</exists-maven-plugin.version>
-    <github-release-plugin.version>1.4.0</github-release-plugin.version>
-    <nexus-staging-maven-plugin.version>1.6.8</nexus-staging-maven-plugin.version>
-    <!-- Spring -->
-    <spring.version>5.3.24</spring.version>
-    <spring-boot.version>2.6.14</spring-boot.version>
-    <spring-cloud-starter-bootstrap.version>3.1.6</spring-cloud-starter-bootstrap.version>
+    <exists-maven-plugin.version>0.15.2</exists-maven-plugin.version>
+    <central-publishing-maven-plugin.version>0.11.0</central-publishing-maven-plugin.version>
+    <!-- Common -->
+    <spring-boot.version>3.5.16</spring-boot.version>
+    <spring-cloud-starter-bootstrap.version>4.3.3</spring-cloud-starter-bootstrap.version>
+    <!-- lombok must be pinned explicitly for the annotation-processor path; kept in sync with the Spring Boot BOM -->
+    <lombok.version>1.18.46</lombok.version>
     <!-- Other -->
-    <docker-java.version>3.3.0</docker-java.version>
-    <activation.version>1.1.1</activation.version>
-    <httpclient.version>4.5.14</httpclient.version>
-    <lombok.version>1.18.26</lombok.version>
-    <slf4j-api.version>1.7.36</slf4j-api.version>
+    <docker-java.version>3.7.1</docker-java.version>
     <duct-tape.version>1.0.8</duct-tape.version>
     <!-- Testing -->
-    <jacoco.version>0.8.8</jacoco.version>
-    <junit.version>4.13.2</junit.version>
-    <assertj-core.version>3.24.2</assertj-core.version>
-    <logback-classic.version>1.2.11</logback-classic.version>
+    <jacoco.version>0.8.15</jacoco.version>
+    <!-- Explicit so Sonar reads the combined UT+IT jacoco report instead of guessing via scanner-default path conventions. -->
+    <sonar.coverage.jacoco.xmlReportPaths>${project.build.directory}/site/jacoco/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
   </properties>
 
-  <dependencies>
-    <!-- Docker client -->
-    <dependency>
-      <groupId>com.github.docker-java</groupId>
-      <artifactId>docker-java</artifactId>
-      <version>${docker-java.version}</version>
-      <exclusions>
-        <exclusion>
-          <groupId>org.slf4j</groupId>
-          <artifactId>slf4j-api</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.apache.httpcomponents</groupId>
-          <artifactId>httpclient</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.apache.httpcomponents</groupId>
-          <artifactId>httpcore</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>com.github.docker-java</groupId>
-          <artifactId>docker-java-transport-netty</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.httpcomponents</groupId>
-      <artifactId>httpclient</artifactId>
-      <version>${httpclient.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>javax.activation</groupId>
-      <artifactId>activation</artifactId>
-      <version>${activation.version}</version>
-    </dependency>
+  <dependencyManagement>
+    <dependencies>
+      <!-- Respect Spring Boot's dependency management: all BOM-managed versions
+           (spring-*, junit, mockito, byte-buddy, assertj, logback, slf4j, httpclient5, ...)
+           are inherited from here instead of being pinned individually. -->
+      <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-dependencies</artifactId>
+        <version>${spring-boot.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
 
-    <!-- Spring -->
+  <dependencies>
+    <!-- Common -->
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-autoconfigure</artifactId>
-      <version>${spring-boot.version}</version>
       <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-configuration-processor</artifactId>
+      <optional>true</optional>
     </dependency>
     <!-- We only need "spring-cloud-context", but without this starter the property
         "spring.cloud.bootstrap.enabled" is set to false by default, so we would
@@ -149,37 +119,74 @@
         </exclusion>
       </exclusions>
     </dependency>
-
-    <!-- Common -->
     <dependency>
       <groupId>org.projectlombok</groupId>
       <artifactId>lombok</artifactId>
-      <version>${lombok.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
-      <version>${slf4j-api.version}</version>
       <scope>provided</scope>
+    </dependency>
+  
+    <!-- Other -->
+    <dependency>
+      <groupId>com.github.docker-java</groupId>
+      <artifactId>docker-java</artifactId>
+      <version>${docker-java.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>org.slf4j</groupId>
+          <artifactId>slf4j-api</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.apache.httpcomponents</groupId>
+          <artifactId>httpclient</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.apache.httpcomponents</groupId>
+          <artifactId>httpcore</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>com.github.docker-java</groupId>
+          <artifactId>docker-java-transport-netty</artifactId>
+        </exclusion>
+        <exclusion>
+          <!-- Unused fallback transport (we always supply ApacheDockerHttpClient); its javax.ws.rs/jersey-* tree would otherwise clash with Spring Boot's jakarta-only jersey-bom -->
+          <groupId>com.github.docker-java</groupId>
+          <artifactId>docker-java-transport-jersey</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <!-- Provides ApacheDockerHttpClient, so docker-java can be given an explicit DockerHttpClient instead of silently falling back to its legacy
+           Jersey transport (which logs a "will be an error in future releases" warning on every container start/stop). -->
+      <groupId>com.github.docker-java</groupId>
+      <artifactId>docker-java-transport-httpclient5</artifactId>
+      <version>${docker-java.version}</version>
+    </dependency>
+    <dependency>
+      <!-- Version managed by the Spring Boot BOM (5.5.2), which also overrides docker-java-transport-httpclient5's transitive 5.5.1 across the tree. -->
+      <groupId>org.apache.httpcomponents.client5</groupId>
+      <artifactId>httpclient5</artifactId>
     </dependency>
     <dependency>
       <groupId>org.rnorth.duct-tape</groupId>
       <artifactId>duct-tape</artifactId>
       <version>${duct-tape.version}</version>
+      <scope>compile</scope>
     </dependency>
 
     <!-- Testing -->
     <dependency>
       <groupId>org.assertj</groupId>
       <artifactId>assertj-core</artifactId>
-      <version>${assertj-core.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>${junit.version}</version>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter-engine</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -192,19 +199,16 @@
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-test</artifactId>
-      <version>${spring.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-test</artifactId>
-      <version>${spring-boot.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>ch.qos.logback</groupId>
       <artifactId>logback-classic</artifactId>
-      <version>${logback-classic.version}</version>
       <scope>test</scope>
       <exclusions>
         <exclusion>
@@ -213,14 +217,22 @@
         </exclusion>
       </exclusions>
     </dependency>
+    <dependency>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-core</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>net.bytebuddy</groupId>
+      <artifactId>byte-buddy</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>net.bytebuddy</groupId>
+      <artifactId>byte-buddy-agent</artifactId>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
-
-  <repositories>
-    <repository>
-      <id>sonatype-oss</id>
-      <url>https://oss.sonatype.org/content/repositories/releases</url>
-    </repository>
-  </repositories>
 
   <build>
     <plugins>
@@ -229,8 +241,8 @@
         <artifactId>maven-compiler-plugin</artifactId>
         <version>${maven-compiler-plugin.version}</version>
         <configuration>
-          <source>${java.version}</source>
-          <target>${java.version}</target>
+          <release>${java.version}</release>
+          <parameters>true</parameters>
         </configuration>
       </plugin>
       <plugin>
@@ -250,10 +262,6 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
         <version>${maven-javadoc-plugin.version}</version>
-        <configuration>
-          <!-- Fix for https://bugs.openjdk.java.net/browse/JDK-8212233 -->
-          <failOnError>false</failOnError>
-        </configuration>
         <executions>
           <execution>
             <id>attach-javadocs</id>
@@ -275,7 +283,7 @@
               <goal>sign</goal>
             </goals>
             <configuration>
-              <!-- Hopefully fixed in version 1.7 ? (https://issues.apache.org/jira/browse/MGPG-59) -->
+              <!-- Needed for non-interactive signing; gpg would otherwise try an interactive pinentry prompt and fail in headless build environments -->
               <gpgArguments>
                 <arg>--pinentry-mode</arg>
                 <arg>loopback</arg>
@@ -293,6 +301,7 @@
           <argLine>-Duser.timezone=Europe/Berlin</argLine>
           <systemPropertyVariables>
             <jacoco-agent.destfile>target/jacoco.exec</jacoco-agent.destfile>
+            <jacoco-agent.append>true</jacoco-agent.append>
           </systemPropertyVariables>
         </configuration>
       </plugin>
@@ -302,6 +311,10 @@
         <version>${maven-failsafe-plugin.version}</version>
         <configuration>
           <reportsDirectory>target/surefire-reports</reportsDirectory>
+          <systemPropertyVariables>
+            <jacoco-agent.destfile>target/jacoco.exec</jacoco-agent.destfile>
+            <jacoco-agent.append>true</jacoco-agent.append>
+          </systemPropertyVariables>
         </configuration>
         <executions>
           <execution>
@@ -340,54 +353,28 @@
               <goal>restore-instrumented-classes</goal>
             </goals>
           </execution>
+          <!--
+            default-restore-instrumented-classes above runs at its default phase (prepare-package) to keep the
+            packaged jar free of instrumented bytecode. But that means classes are back to non-instrumented by the
+            time integration-test runs (pre-integration-test/integration-test come after prepare-package/package in
+            the lifecycle) - so without re-instrumenting here, Failsafe would silently record zero IT coverage.
+          -->
           <execution>
-            <id>default-report</id>
-            <phase>prepare-package</phase>
+            <id>pre-integration-test-instrument</id>
+            <phase>pre-integration-test</phase>
             <goals>
-              <goal>report</goal>
+              <goal>instrument</goal>
             </goals>
-            <configuration>
-              <dataFile>target/jacoco-ut.exec</dataFile>
-              <outputDirectory>target/jacoco-ut</outputDirectory>
-            </configuration>
           </execution>
           <execution>
-            <id>integration-test-report</id>
+            <id>post-integration-test-restore</id>
             <phase>post-integration-test</phase>
             <goals>
-              <goal>report</goal>
-            </goals>
-            <configuration>
-              <dataFile>target/jacoco-it.exec</dataFile>
-              <outputDirectory>target/jacoco-it</outputDirectory>
-            </configuration>
-          </execution>
-          <execution>
-            <id>agent</id>
-            <goals>
-              <goal>prepare-agent</goal>
+              <goal>restore-instrumented-classes</goal>
             </goals>
           </execution>
           <execution>
-            <id>merge-results</id>
-            <phase>verify</phase>
-            <goals>
-              <goal>merge</goal>
-            </goals>
-            <configuration>
-              <fileSets>
-                <fileSet>
-                  <directory>target</directory>
-                  <includes>
-                    <include>*.exec</include>
-                  </includes>
-                </fileSet>
-              </fileSets>
-              <destFile>target/jacoco.exec</destFile>
-            </configuration>
-          </execution>
-          <execution>
-            <id>post-merge-report</id>
+            <id>report</id>
             <phase>verify</phase>
             <goals>
               <goal>report</goal>
@@ -434,34 +421,14 @@
         </executions>
       </plugin>
       <plugin>
-        <groupId>de.jutzig</groupId>
-        <artifactId>github-release-plugin</artifactId>
-        <version>${github-release-plugin.version}</version>
-        <executions>
-          <execution>
-            <id>github-upload</id>
-            <phase>deploy</phase>
-            <goals>
-              <goal>release</goal>
-            </goals>
-            <configuration>
-              <releaseName>${project.version}</releaseName>
-              <tag>${project.version}</tag>
-              <artifact>${project.build.directory}/${project.artifactId}-${project.version}.jar</artifact>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <groupId>org.sonatype.plugins</groupId>
-        <artifactId>nexus-staging-maven-plugin</artifactId>
-        <version>${nexus-staging-maven-plugin.version}</version>
+        <groupId>org.sonatype.central</groupId>
+        <artifactId>central-publishing-maven-plugin</artifactId>
+        <version>${central-publishing-maven-plugin.version}</version>
         <extensions>true</extensions>
         <configuration>
-          <serverId>ossrh</serverId>
-          <nexusUrl>https://oss.sonatype.org/</nexusUrl>
-          <autoReleaseAfterClose>true</autoReleaseAfterClose>
-          <skipRemoteStaging>${skip-deploy-to-central}</skipRemoteStaging>
+          <autoPublish>true</autoPublish>
+          <waitUntil>published</waitUntil>
+          <skipPublishing>${skip-deploy-to-central}</skipPublishing>
         </configuration>
       </plugin>
     </plugins>

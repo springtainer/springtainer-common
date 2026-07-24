@@ -1,14 +1,19 @@
 package com.avides.springboot.springtainer.common.container;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.WeakHashMap;
 import java.util.concurrent.TimeUnit;
 
 import org.rnorth.ducttape.TimeoutException;
 import org.rnorth.ducttape.unreliables.Unreliables;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationListener;
+import org.springframework.context.LifecycleProcessor;
 import org.springframework.context.event.ApplicationContextEvent;
 import org.springframework.context.event.ContextClosedEvent;
 import org.springframework.context.event.ContextStoppedEvent;
@@ -16,6 +21,7 @@ import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MapPropertySource;
 
 import com.avides.springboot.springtainer.common.Labels;
+import com.avides.springboot.springtainer.common.util.DockerClients;
 import com.avides.springboot.springtainer.common.util.IssuerUtil;
 import com.github.dockerjava.api.DockerClient;
 import com.github.dockerjava.api.command.CreateContainerCmd;
@@ -23,7 +29,6 @@ import com.github.dockerjava.api.command.PullImageResultCallback;
 import com.github.dockerjava.api.exception.InternalServerErrorException;
 import com.github.dockerjava.api.exception.NotFoundException;
 import com.github.dockerjava.api.model.HostConfig;
-import com.github.dockerjava.core.DockerClientBuilder;
 
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -32,11 +37,18 @@ import lombok.extern.slf4j.Slf4j;
 public abstract class AbstractBuildingEmbeddedContainer<P extends AbstractEmbeddedContainerProperties> extends AbstractEmbeddedContainer<P>
         implements ApplicationListener<ApplicationContextEvent>
 {
+    /**
+     * Guards {@link LifecycleProcessor#onClose()} so it runs at most once per {@link ApplicationContext}, even though every
+     * container bean in that context is itself a listener and receives the same {@code ContextClosedEvent}/{@code ContextStoppedEvent}.
+     * Without this, a context with N embedded containers would run N redundant full lifecycle-stop passes on shutdown. Weakly
+     * referenced so a closed context can still be garbage-collected.
+     */
+    private static final Set<ApplicationContext> LIFECYCLE_CLOSED_CONTEXTS = Collections.newSetFromMap(Collections.synchronizedMap(new WeakHashMap<>()));
+
     protected String service;
 
     @SneakyThrows
-    // TODO: fix this sonar issue within next breaking change -> Constructors of an "abstract" class should not be declared "public"
-    public AbstractBuildingEmbeddedContainer(String service, ConfigurableEnvironment environment, P properties)
+    protected AbstractBuildingEmbeddedContainer(String service, ConfigurableEnvironment environment, P properties)
     {
         this.service = service;
         this.environment = environment;
@@ -44,8 +56,10 @@ public abstract class AbstractBuildingEmbeddedContainer<P extends AbstractEmbedd
 
         log.info("Starting {}-container with {}", service, properties);
 
-        try (DockerClient dockerClient = DockerClientBuilder.getInstance().build())
+        try
         {
+            DockerClient dockerClient = DockerClients.shared();
+
             createContainer(dockerClient);
 
             log.info("Checking {}-container... (Timeout: {}s)", service, Integer.valueOf(properties.getStartupTimeout()));
@@ -67,7 +81,7 @@ public abstract class AbstractBuildingEmbeddedContainer<P extends AbstractEmbedd
         }
         catch (ContainerStartupFailedException e)
         {
-            killContainer(DockerClientBuilder.getInstance().build());
+            killContainer(DockerClients.shared());
             log.error("Failed to start {}-container", service, e);
         }
     }
@@ -202,16 +216,30 @@ public abstract class AbstractBuildingEmbeddedContainer<P extends AbstractEmbedd
 
     protected abstract boolean isContainerReady(P properties);
 
+    /**
+     * Stops all of the context's other {@link org.springframework.context.SmartLifecycle} beans before killing this container.
+     * <p>
+     * {@code ContextClosedEvent} fires before {@code DefaultLifecycleProcessor.onClose()}, so without this the container could be removed while e.g.
+     * Spring AMQP's {@code CachingConnectionFactory} is still live, risking a shutdown deadlock. Do not make this container itself a
+     * {@code SmartLifecycle}/{@link org.springframework.beans.factory.DisposableBean} bean instead - it starts eagerly in the constructor, and Spring
+     * does not reliably invoke {@code stop()}/{@code destroy()} on a bean that already reports {@code isRunning() == true} on first discovery.
+     */
     @SneakyThrows
     @Override
     public void onApplicationEvent(ApplicationContextEvent event)
     {
         if (event instanceof ContextStoppedEvent || event instanceof ContextClosedEvent)
         {
-            try (DockerClient dockerClient = DockerClientBuilder.getInstance().build())
+            ApplicationContext applicationContext = event.getApplicationContext();
+            if (LIFECYCLE_CLOSED_CONTEXTS.add(applicationContext))
+            {
+                applicationContext.getBean(LifecycleProcessor.class).onClose();
+            }
+
+            try
             {
                 log.info("Stopping {}-container...", service);
-                killContainer(dockerClient);
+                killContainer(DockerClients.shared());
                 log.info("{}-container stopped", service);
             }
             catch (NotFoundException e)
