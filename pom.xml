@@ -3,7 +3,7 @@
 
   <groupId>com.avides.springboot.springtainer</groupId>
   <artifactId>springtainer-common</artifactId>
-  <version>2.0.0</version>
+  <version>3.0.0-RC1</version>
 
   <name>springtainer-common</name>
   <description>Common utils for springtainer</description>
@@ -40,7 +40,7 @@
     <!-- Build -->
     <maven.build.timestamp.format>dd.MM.yyyy HH:mm</maven.build.timestamp.format>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <java.version>21</java.version>
+    <java.version>25</java.version>
     <maven-compiler-plugin.version>3.15.0</maven-compiler-plugin.version>
     <maven-source-plugin.version>3.4.0</maven-source-plugin.version>
     <maven-javadoc-plugin.version>3.12.0</maven-javadoc-plugin.version>
@@ -53,8 +53,8 @@
     <exists-maven-plugin.version>0.15.2</exists-maven-plugin.version>
     <central-publishing-maven-plugin.version>0.11.0</central-publishing-maven-plugin.version>
     <!-- Common -->
-    <spring-boot.version>3.5.16</spring-boot.version>
-    <spring-cloud-starter-bootstrap.version>4.3.3</spring-cloud-starter-bootstrap.version>
+    <spring-boot.version>4.1.0</spring-boot.version>
+    <spring-cloud-starter-bootstrap.version>5.0.2</spring-cloud-starter-bootstrap.version>
     <!-- lombok must be pinned explicitly for the annotation-processor path; kept in sync with the Spring Boot BOM -->
     <lombok.version>1.18.46</lombok.version>
     <!-- Other -->
@@ -243,6 +243,12 @@
         <configuration>
           <release>${java.version}</release>
           <parameters>true</parameters>
+          <!-- JDK 23+ no longer enables annotation processing for processors found on the classpath (JEP "javac
+               should not enable annotation processing by default"). Without this, Lombok silently does nothing and
+               the build fails with "cannot find symbol" on every generated getter and log field. Using proc=full
+               rather than annotationProcessorPaths keeps spring-boot-configuration-processor working too - the
+               latter replaces classpath scanning entirely and would silently drop it. -->
+          <proc>full</proc>
         </configuration>
       </plugin>
       <plugin>
