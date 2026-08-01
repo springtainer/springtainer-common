@@ -243,11 +243,9 @@
         <configuration>
           <release>${java.version}</release>
           <parameters>true</parameters>
-          <!-- JDK 23+ no longer enables annotation processing for processors found on the classpath (JEP "javac
-               should not enable annotation processing by default"). Without this, Lombok silently does nothing and
-               the build fails with "cannot find symbol" on every generated getter and log field. Using proc=full
-               rather than annotationProcessorPaths keeps spring-boot-configuration-processor working too - the
-               latter replaces classpath scanning entirely and would silently drop it. -->
+          <!-- Lombok and spring-boot-configuration-processor are picked up from the classpath, which requires
+               annotation processing to be enabled explicitly. annotationProcessorPaths is not an option here: it
+               replaces classpath scanning entirely and would drop the configuration processor. -->
           <proc>full</proc>
         </configuration>
       </plugin>
